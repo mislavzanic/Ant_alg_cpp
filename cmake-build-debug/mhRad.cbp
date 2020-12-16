@@ -190,6 +190,9 @@
 		<Unit filename="/home/mislav/CLionProjects/mhRad/Project/src/Maze/Maze.h">
 			<Option target="Maze"/>
 		</Unit>
+		<Unit filename="/home/mislav/CLionProjects/mhRad/Project/src/util/Random.h">
+			<Option target="Maze"/>
+		</Unit>
 		<Unit filename="/home/mislav/CLionProjects/mhRad/deps/stb_image/stb_image.cpp">
 			<Option target="stbi"/>
 		</Unit>

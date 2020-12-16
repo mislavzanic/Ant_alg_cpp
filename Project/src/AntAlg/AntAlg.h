@@ -6,6 +6,7 @@
 #define MHRAD_ANTALG_H
 
 #include "Maze/Maze.h"
+#include "util/Random.h"
 
 #include <vector>
 #include <stack>
@@ -40,7 +41,7 @@ namespace mh {
         void getSubset(std::vector<std::set<int>>& paths) const;
 
         void updatePheromone(const std::vector<std::set<int>>& bestPaths);
-        void increasePheromones(int Ant);
+        void increasePheromones(int Ant, const std::vector<std::set<int>>& bestPaths);
         void decreasePheromones(int Ant);
 
     private:
@@ -52,6 +53,8 @@ namespace mh {
 
         double *mPheromones;
         double mDecreaseFactor;
+
+        Random<std::mt19937> mRandEngine;
     };
 
 }
