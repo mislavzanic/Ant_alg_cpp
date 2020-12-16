@@ -1,0 +1,26 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../Project/src/AntAlg/AntAlg.h
+Maze/Maze.h
+../Project/src/AntAlg/Maze/Maze.h
+
+../Project/src/Maze/Maze.h
+string
+-
+
+../Project/src/Project.h
+Maze/Maze.h
+../Project/src/Maze/Maze.h
+AntAlg/AntAlg.h
+../Project/src/AntAlg/AntAlg.h
+
+/home/mislav/CLionProjects/mhRad/main.cpp
+Project.h
+/home/mislav/CLionProjects/mhRad/Project.h
+

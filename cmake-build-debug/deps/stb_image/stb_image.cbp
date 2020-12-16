@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="stb_image"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="gcc"/>
+		<Option virtualFolders="CMake Files\;CMake Files\deps\;CMake Files\deps\stb_image\;CMake Files\Project\;CMake Files\Project\src\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 all"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="stbi">
+				<Option output="/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/libstbi.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 stbi"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="stbi/fast">
+				<Option output="/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/libstbi.a" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image"/>
+				<Option object_output="./"/>
+				<Option type="2"/>
+				<Option compiler="gcc"/>
+				<Compiler>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/x86_64-pc-linux-gnu"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/../../../../include/c++/10.2.0/backward"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include"/>
+					<Add directory="/usr/local/include"/>
+					<Add directory="/usr/lib/gcc/x86_64-pc-linux-gnu/10.2.0/include-fixed"/>
+					<Add directory="/usr/include"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 stbi/fast"/>
+					<CompileFile command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 clean"/>
+					<DistClean command="/usr/bin/make -j12 -f &quot;/home/mislav/CLionProjects/mhRad/cmake-build-debug/deps/stb_image/Makefile&quot;  VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="/home/mislav/CLionProjects/mhRad/deps/stb_image/stb_image.cpp">
+			<Option target="stbi"/>
+		</Unit>
+		<Unit filename="/home/mislav/CLionProjects/mhRad/deps/stb_image/stb_image.h">
+			<Option target="stbi"/>
+		</Unit>
+		<Unit filename="/home/mislav/CLionProjects/mhRad/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="/home/mislav/CLionProjects/mhRad/deps/stb_image/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\deps\stb_image\"/>
+		</Unit>
+		<Unit filename="/home/mislav/CLionProjects/mhRad/Project/src/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\Project\src\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>
