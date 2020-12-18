@@ -34,7 +34,8 @@ namespace mh {
         };
 
     private:
-        void createSolution(int Ant, std::map<int, int>& path);
+        void createSolution(std::map<int, int>& path);
+        void initialSolution();
 
         void getPath(std::map<int, int>& newPath, std::vector<std::set<int>>& paths);
         int pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path);
@@ -47,11 +48,11 @@ namespace mh {
     private:
         Maze mMaze;
 
-        int* mAnts;
         int mSubsetLen;
         int mNumOfAnts;
 
         double *mPheromones;
+        double *mAllPheromones;
         double mDecreaseFactor;
 
         Random<std::mt19937> mRandEngine;

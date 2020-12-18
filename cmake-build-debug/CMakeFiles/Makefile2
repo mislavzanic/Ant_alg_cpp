@@ -131,8 +131,8 @@ deps/stb_image/clean: deps/stb_image/CMakeFiles/stbi.dir/clean
 # Target rules for target CMakeFiles/main.dir
 
 # All Build rule for target.
-CMakeFiles/main.dir/all: deps/stb_image/CMakeFiles/stbi.dir/all
 CMakeFiles/main.dir/all: Project/src/CMakeFiles/Maze.dir/all
+CMakeFiles/main.dir/all: deps/stb_image/CMakeFiles/stbi.dir/all
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/depend
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/main.dir/build.make CMakeFiles/main.dir/build
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --progress-dir=/home/mislav/CLionProjects/mhRad/cmake-build-debug/CMakeFiles --progress-num=4,5 "Built target main"

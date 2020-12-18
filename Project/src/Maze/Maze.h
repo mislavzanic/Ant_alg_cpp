@@ -20,15 +20,15 @@ namespace mh {
 
         int Start() { return mStart; }
         int End() { return mEnd; }
-        int Width() { return mCols; }
-        int Height() { return mRows; }
+        int Width() { return mWidth; }
+        int Height() { return mHeight; }
 
     private:
         void loadImageFromFile(const std::string& filepath);
 
     private:
-        int mRows;
-        int mCols;
+        int mHeight;
+        int mWidth;
         int mStart;
         int mEnd;
         bool *mMaze;
