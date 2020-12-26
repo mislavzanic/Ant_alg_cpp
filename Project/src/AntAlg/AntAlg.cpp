@@ -79,7 +79,7 @@ namespace mh {
          }
     }
 
-    int AntAlg::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path)
+    void AntAlg::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path)
     {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
@@ -104,6 +104,8 @@ namespace mh {
                 {
                     sum += mPheromones[cellIndex[num]];
                 }
+
+                path[cellIndex[num]] = cell;
             }
         }
         std::stack<int> tempS;
@@ -113,7 +115,7 @@ namespace mh {
             double total = 0;
             for (int num : order)
             {
-                if (mPheromones[cellIndex[num]] && mPheromones[cellIndex[num]] + total >= r)
+                if (mPheromones[cellIndex[num]] != 0 && mPheromones[cellIndex[num]] + total >= r)
                 {
                     tempS.push(cellIndex[num]);
                     sum -= mPheromones[cellIndex[num]];
@@ -149,7 +151,7 @@ namespace mh {
     {
         std::for_each(bestPaths.begin(), bestPaths.begin() + mSubsetLen, [this](auto &s)
         {
-            for (auto cell : s) this->mPheromones[s] += this->mAllPheromones[s];
+            for (auto cell : s) this->mPheromones[cell] += this->mAllPheromones[cell];
         });
     }
 

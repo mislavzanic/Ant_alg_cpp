@@ -29,7 +29,7 @@ namespace mh {
         void initialSolution();
 
         void getPath(std::map<int, int>& newPath, std::vector<std::set<int>>& paths);
-        int pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path);
+        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path);
         void getSubset(std::vector<std::set<int>>& paths) const;
 
         void updatePheromone(const std::vector<std::set<int>>& bestPaths);
