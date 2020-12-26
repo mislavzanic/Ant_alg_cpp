@@ -12,7 +12,7 @@
 namespace mh {
 
     AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p)
-        : mMaze(filepath), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen), mDecreaseFactor(p), mRandEngine(),
+        : mMaze(filepath), mFirstTraverse(true), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen), mDecreaseFactor(p), mRandEngine(),
          mPheromones(new double[mMaze.Width() * mMaze.Height()]), mAllPheromones(new double[mMaze.Width() * mMaze.Height()])
     {
         for (int i = 0; i < mMaze.Width() * mMaze.Height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
@@ -62,6 +62,7 @@ namespace mh {
         createSolution(startPath);
         getPath(startPath, paths);
         updatePheromone(paths);
+        mFirstTraverse = false;
     }
 
     void AntAlg::updatePheromone(const std::vector<std::set<int>>& bestPaths)
@@ -80,52 +81,52 @@ namespace mh {
 
     int AntAlg::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path)
     {
-        int w = mMaze.Width(), h = mMaze.Height(), num = 0;
-        std::map<int, double> probabilities;
-        double p = 0;
-        if (cell % w && mMaze[cell - 1])
+        std::array<int, 4> order{1,2,3,4};
+        std::map<int, int> cellIndex
         {
-            path[cell - 1] = cell;
-            probabilities[cell - 1] = mPheromones[cell - 1];
-            if (mPheromones[cell - 1] != 0) p += mPheromones[cell - 1];
-            else num += 1;
+            {1, cell < mMaze.Width() ? -1 : cell - mMaze.Width()},
+            {2, cell + mMaze.Width() > mMaze.Width() * mMaze.Height() ? -1 : cell + mMaze.Width()},
+            {3, cell % mMaze.Width() ? cell - 1 : -1},
+            {4, (cell + 1) % mMaze.Width() ? cell + 1 : -1}
+        };
+        double sum = 0;
+        if (mFirstTraverse)
+        {
+            std::shuffle(order.begin(), order.end(), mRandEngine.getEngine());
         }
-        else probabilities[cell - 1] = 0;
-        if ((cell + 1) % w && mMaze[cell + 1])
+        for (int num : order)
         {
-            path[cell + 1] = cell;
-            probabilities[cell + 1] = mPheromones[cell + 1];
-            if (mPheromones[cell + 1] != 0) p += mPheromones[cell + 1];
-            else num += 1;
-        }
-        if (cell - w > -1 && mMaze[cell - w])
-        {
-            path[cell - w] = cell;
-            probabilities[cell - w] = mPheromones[cell - w];
-            if (mPheromones[cell - w] != 0) p += mPheromones[cell - w];
-            else num += 1;
-        }
-        if (cell + w < w*h && mMaze[cell + w])
-        {
-            path[cell + w] = cell;
-            probabilities[cell + w] = mPheromones[cell + w];
-            if (mPheromones[cell + w] != 0) p += mPheromones[cell + w];
-            else num += 1;
-        }
-        if (num == 4)
-        {
-            double pickRate = 0.25;
-        }
-        else
-        {
-            if (p > 1)
+            if (cellIndex[num] != -1 && mMaze[cellIndex[num]])
             {
-
+                if (mFirstTraverse)
+                    toVisit.push(cellIndex[num]);
+                else
+                {
+                    sum += mPheromones[cellIndex[num]];
+                }
             }
-            else
+        }
+        std::stack<int> tempS;
+        while (sum > 0)
+        {
+            double r = mRandEngine.getFloatInRange(0, sum);
+            double total = 0;
+            for (int num : order)
             {
-
+                if (mPheromones[cellIndex[num]] && mPheromones[cellIndex[num]] + total >= r)
+                {
+                    tempS.push(cellIndex[num]);
+                    sum -= mPheromones[cellIndex[num]];
+                    break;
+                }
+                total += mPheromones[cellIndex[num]];
             }
+        }
+        while (!tempS.empty())
+        {
+            int temp = tempS.top();
+            tempS.pop();
+            toVisit.push(temp);
         }
     }
 

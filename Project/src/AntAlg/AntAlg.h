@@ -25,15 +25,6 @@ namespace mh {
         void solve(int numOfIterations);
 
     private:
-        struct compare
-        {
-            bool operator() (const std::set<int>& lhs, const std::set<int>& rhs) const
-            {
-                return lhs.size() < rhs.size();
-            }
-        };
-
-    private:
         void createSolution(std::map<int, int>& path);
         void initialSolution();
 
@@ -50,6 +41,7 @@ namespace mh {
 
         int mSubsetLen;
         int mNumOfAnts;
+        bool mFirstTraverse;
 
         double *mPheromones;
         double *mAllPheromones;

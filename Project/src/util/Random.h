@@ -28,6 +28,8 @@ public:
         return dist(m_prng);
     }
 
+    Engine& getEngine() { return m_prng; }
+
 private:
     Engine m_prng;
 };
