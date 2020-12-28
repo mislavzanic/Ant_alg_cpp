@@ -18,10 +18,10 @@ namespace mh {
         const bool& operator[](int index) const { return mMaze[index]; }
         bool& operator[](int index) { return mMaze[index]; }
 
-        int Start() const { return mStart; }
-        int End() const { return mEnd; }
-        int Width() const { return mWidth; }
-        int Height() const { return mHeight; }
+        int start() const { return mStart; }
+        int end() const { return mEnd; }
+        int width() const { return mWidth; }
+        int height() const { return mHeight; }
 
     private:
         void loadImageFromFile(const std::string& filepath);

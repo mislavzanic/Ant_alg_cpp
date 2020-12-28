@@ -13,9 +13,10 @@ namespace mh {
 
     AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p)
         : mMaze(filepath), mFirstTraverse(true), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen), mDecreaseFactor(p), mRandEngine(),
-         mPheromones(new double[mMaze.Width() * mMaze.Height()]), mAllPheromones(new double[mMaze.Width() * mMaze.Height()])
+          mPheromones(new double[mMaze.width() * mMaze.height()]), mAllPheromones(new double[mMaze.width() *
+                                                                                             mMaze.height()])
     {
-        for (int i = 0; i < mMaze.Width() * mMaze.Height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
+        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
     }
 
     void AntAlg::solve(int numOfIterations) {
@@ -38,8 +39,8 @@ namespace mh {
 
     void AntAlg::createSolution(std::map<int, int>& path)
     {
-        int start = mMaze.Start();
-        int end = mMaze.End();
+        int start = mMaze.start();
+        int end = mMaze.end();
         std::stack<int> toVisit;
         std::map<int, bool> visited;
         toVisit.push(start);
@@ -72,7 +73,7 @@ namespace mh {
              for (int c:s) increasePheromones(c, bestPaths);
          }
 
-         for (int i = 0; i < mMaze.Width() * mMaze.Height(); ++i)
+         for (int i = 0; i < mMaze.width() * mMaze.height(); ++i)
          {
              if (mPheromones[i] > 0) decreasePheromones(i);
              mAllPheromones[i] = 0;
@@ -84,10 +85,10 @@ namespace mh {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
         {
-            {1, cell < mMaze.Width() ? -1 : cell - mMaze.Width()},
-            {2, cell + mMaze.Width() > mMaze.Width() * mMaze.Height() ? -1 : cell + mMaze.Width()},
-            {3, cell % mMaze.Width() ? cell - 1 : -1},
-            {4, (cell + 1) % mMaze.Width() ? cell + 1 : -1}
+            {1, cell < mMaze.width() ? -1 : cell - mMaze.width()},
+            {2, cell + mMaze.width() > mMaze.width() * mMaze.height() ? -1 : cell + mMaze.width()},
+            {3, cell % mMaze.width() ? cell - 1 : -1},
+            {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
         };
         double sum = 0;
         if (mFirstTraverse)
@@ -134,7 +135,7 @@ namespace mh {
 
     void AntAlg::getPath(std::map<int, int> &newPath, std::vector<std::set<int>> &paths)
     {
-        int start = mMaze.Start(), end = mMaze.End(), len = 0;
+        int start = mMaze.start(), end = mMaze.end(), len = 0;
         std::set<int> path;
         while (end != start)
         {

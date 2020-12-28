@@ -22,8 +22,8 @@ namespace mh {
 
     private:
         void initialSolution(std::map<int, int> &path);
+        int getNeighbourPath(std::vector<int>& path);
         int pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path);
-        int traverseBack();
 
     private:
         Maze mMaze;

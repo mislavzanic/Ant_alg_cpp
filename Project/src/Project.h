@@ -7,6 +7,7 @@
 
 #include "Maze/Maze.h"
 #include "AntAlg/AntAlg.h"
+#include "SimulatedAnnealing/SimAnn.h"
 
 
 #endif //MHRAD_PROJECT_H

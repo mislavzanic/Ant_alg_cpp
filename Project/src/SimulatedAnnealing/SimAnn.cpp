@@ -8,29 +8,39 @@
 namespace mh {
 
     SimAnn::SimAnn(const std::string &filepath, double minTemp, double maxTemp, double step)
-        : mMaze(filepath), mCurrentTemp(minTemp), mFinalTemp(maxTemp), mStep(step)
+        : mMaze(filepath), mCurrentTemp(maxTemp), mFinalTemp(minTemp), mStep(step)
     {
         std::map<int, int> path;
         initialSolution(path);
-        int curr = mMaze.End();
-        while (curr != mMaze.Start())
+        int curr = mMaze.end();
+        while (curr != mMaze.start())
         {
             mPath.push_back(curr);
             curr = path[curr];
         }
-        mPath.push_back(mMaze.Start());
+        mPath.push_back(mMaze.start());
         mSolution = mPath.size();
     }
 
     void SimAnn::solve()
     {
+        while (mCurrentTemp > mFinalTemp)
+        {
+            std::vector<int> neighbourPath;
+            int lenNeigPath = getNeighbourPath(neighbourPath);
+            double neighbourCost = 0;
+            double costDiff = mSolution - neighbourCost;
 
+            if (costDiff > 0)
+            {
+            }
+        }
     }
 
     void SimAnn::initialSolution(std::map<int, int> &path)
     {
-        int start = mMaze.Start();
-        int end = mMaze.End();
+        int start = mMaze.start();
+        int end = mMaze.end();
         std::stack<int> toVisit;
         std::map<int, bool> visited;
         toVisit.push(start);
@@ -49,12 +59,12 @@ namespace mh {
     {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
-                {
-                        {1, cell < mMaze.Width() ? -1 : cell - mMaze.Width()},
-                        {2, cell + mMaze.Width() > mMaze.Width() * mMaze.Height() ? -1 : cell + mMaze.Width()},
-                        {3, cell % mMaze.Width() ? cell - 1 : -1},
-                        {4, (cell + 1) % mMaze.Width() ? cell + 1 : -1}
-                };
+        {
+            {1, cell < mMaze.width() ? -1 : cell - mMaze.width()},
+            {2, cell + mMaze.width() > mMaze.width() * mMaze.height() ? -1 : cell + mMaze.width()},
+            {3, cell % mMaze.width() ? cell - 1 : -1},
+            {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
+        };
         std::shuffle(order.begin(), order.end(), mRandEngine.getEngine());
         for (int num : order)
         {
@@ -66,9 +76,11 @@ namespace mh {
         }
     }
 
-    int SimAnn::traverseBack()
+    int SimAnn::getNeighbourPath(std::vector<int> &path)
     {
-        return 0;
+        // hodaj po izabranom putu
+        // kad naidjes na krizanje provjeri sve puteve koje dobijes iz krizanja -- smislit nacin za odabrat nasumicno krizanje
+        // ako je put bolji vrati ga, ako je losiji vrati ga uz odredjenu vjerojatnost
     }
 }
 
