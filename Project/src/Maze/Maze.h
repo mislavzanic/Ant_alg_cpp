@@ -13,13 +13,18 @@ namespace mh {
     {
     public:
         Maze(const std::string& filepath);
+
+        Maze(const std::string &filepath, std::pair<int, int> start, std::pair<int, int> end);
+
         ~Maze();
 
         const bool& operator[](int index) const { return mMaze[index]; }
         bool& operator[](int index) { return mMaze[index]; }
 
-        int start() const { return mStart; }
-        int end() const { return mEnd; }
+        int startAsInt() const { return mStart.first + mStart.second * mWidth; }
+        int endAsInt() const { return mEnd.first + mEnd.second * mWidth; }
+        std::pair<int, int> start() const { return mStart; }
+        std::pair<int, int> end() const { return mEnd; }
         int width() const { return mWidth; }
         int height() const { return mHeight; }
 
@@ -29,8 +34,8 @@ namespace mh {
     private:
         int mHeight;
         int mWidth;
-        int mStart;
-        int mEnd;
+        std::pair<int, int> mStart;
+        std::pair<int, int> mEnd;
         bool *mMaze;
     };
 }

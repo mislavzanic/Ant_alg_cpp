@@ -116,7 +116,7 @@ RECENT REVISION HISTORY:
                      DO NOT ADD YOUR NAME HERE
 
   To add your name to the credits, pick a random blank space in the middle and fill it.
-  80% of merge conflicts on stb PRs are due to people adding their name at the end
+  80% of merge conflicts on stb PRs are due to people adding their name at the endAsInt
   of the credits.
 */
 
@@ -169,7 +169,7 @@ RECENT REVISION HISTORY:
 //
 // If image loading fails for any reason, the return value will be NULL,
 // and *x, *y, *channels_in_file will be unchanged. The function
-// stbi_failure_reason() can be queried for an extremely brief, end-user
+// stbi_failure_reason() can be queried for an extremely brief, endAsInt-user
 // unfriendly explanation of why the load failed. Define STBI_NO_FAILURE_STRINGS
 // to avoid compiling these strings at all, and STBI_FAILURE_USERMSG to get slightly
 // more user-friendly ones.
@@ -219,7 +219,7 @@ RECENT REVISION HISTORY:
 // overhead.
 //
 // The three functions you must define are "read" (reads some bytes of data),
-// "skip" (skips some bytes of data), "eof" (reports if the stream is at the end).
+// "skip" (skips some bytes of data), "eof" (reports if the stream is at the endAsInt).
 //
 // ===========================================================================
 //
@@ -381,7 +381,7 @@ typedef struct
 {
     int      (*read)  (void *user,char *data,int size);   // fill 'data' with 'size' bytes.  return number of bytes actually read
     void     (*skip)  (void *user,int n);                 // skip the next 'n' bytes, or 'unget' the last -n bytes if negative
-    int      (*eof)   (void *user);                       // returns nonzero if we are at end of file/data
+    int      (*eof)   (void *user);                       // returns nonzero if we are at endAsInt of file/data
 } stbi_io_callbacks;
 
 ////////////////////////////////////
@@ -508,7 +508,7 @@ STBIDEF int   stbi_zlib_decode_noheader_buffer(char *obuffer, int olen, const ch
 
 //
 //
-////   end header file   /////////////////////////////////////////////////////
+////   endAsInt header file   /////////////////////////////////////////////////////
 #endif // STBI_INCLUDE_STB_IMAGE_H
 
 #ifdef STB_IMAGE_IMPLEMENTATION
@@ -1539,7 +1539,7 @@ static void stbi__refill_buffer(stbi__context *s)
    int n = (s->io.read)(s->io_user_data,(char*)s->buffer_start,s->buflen);
    s->callback_already_read += (int) (s->img_buffer - s->img_buffer_original);
    if (n == 0) {
-      // at end of file, treat same as if from memory, but need to handle case
+      // at endAsInt of file, treat same as if from memory, but need to handle case
       // where s->img_buffer isn't pointing to safe memory, e.g. 0-byte file
       s->read_from_callbacks = 0;
       s->img_buffer = s->buffer_start;
@@ -1569,8 +1569,8 @@ stbi_inline static int stbi__at_eof(stbi__context *s)
 {
    if (s->io.read) {
       if (!(s->io.eof)(s->io_user_data)) return 0;
-      // if feof() is true, check if buffer = end
-      // special case: we've only got the special 0 character at the end
+      // if feof() is true, check if buffer = endAsInt
+      // special case: we've only got the special 0 character at the endAsInt
       if (s->read_from_callbacks == 0) return 1;
    }
 
@@ -2053,7 +2053,7 @@ stbi_inline static int stbi__jpeg_huff_decode(stbi__jpeg *j, stbi__huffman *h)
    // naive test is to shift the code_buffer down so k bits are
    // valid, then test against maxcode. To speed this up, we've
    // preshifted maxcode left so that it has (16-k) 0s at the
-   // end; in other words, regardless of the number of bits, it
+   // endAsInt; in other words, regardless of the number of bits, it
    // wants to be compared against something shifted to have 16;
    // that way we don't need to shift inside the loop.
    temp = j->code_buffer >> 16;
@@ -2133,7 +2133,7 @@ static const stbi_uc stbi__jpeg_dezigzag[64+15] =
    29, 22, 15, 23, 30, 37, 44, 51,
    58, 59, 52, 45, 38, 31, 39, 46,
    53, 60, 61, 54, 47, 55, 62, 63,
-   // let corrupt input sample past end
+   // let corrupt input sample past endAsInt
    63, 63, 63, 63, 63, 63, 63, 63,
    63, 63, 63, 63, 63, 63, 63
 };
@@ -2178,7 +2178,7 @@ static int stbi__jpeg_decode_block(stbi__jpeg *j, short data[64], stbi__huffman 
          s = rs & 15;
          r = rs >> 4;
          if (s == 0) {
-            if (rs != 0xf0) break; // end block
+            if (rs != 0xf0) break; // endAsInt block
             k += 16;
          } else {
             k += r;
@@ -2298,7 +2298,7 @@ static int stbi__jpeg_decode_block_prog_ac(stbi__jpeg *j, short data[64], stbi__
                   j->eob_run = (1 << r) - 1;
                   if (r)
                      j->eob_run += stbi__jpeg_get_bits(j, r);
-                  r = 64; // force end of block
+                  r = 64; // force endAsInt of block
                } else {
                   // r=15 s=0 should write 16 0s, so we just do
                   // a run of 15 0s and then write s (which is 0),
@@ -2430,7 +2430,7 @@ static void stbi__idct_block(stbi_uc *out, int out_stride, short data[64])
       // loop, plus horizontal and vertical each scale by sqrt(8) so together
       // we've got an extra 1<<3, so 1<<17 total we need to remove.
       // so we want to round that, which means adding 0.5 * 1<<17,
-      // aka 65536. Also, we'll end up with -128 to 127 that we want
+      // aka 65536. Also, we'll endAsInt up with -128 to 127 that we want
       // to encode as 0..255 by adding 128, so we'll add that before the shift
       x0 += 65536 + (128<<17);
       x1 += 65536 + (128<<17);
@@ -3320,7 +3320,7 @@ static int stbi__decode_jpeg_image(stbi__jpeg *j)
          if (!stbi__process_scan_header(j)) return 0;
          if (!stbi__parse_entropy_coded_data(j)) return 0;
          if (j->marker == STBI__MARKER_none ) {
-            // handle 0s at the end of image data from IP Kamera 9060
+            // handle 0s at the endAsInt of image data from IP Kamera 9060
             while (!stbi__at_eof(j->s)) {
                int x = stbi__get8(j->s);
                if (x == 255) {
@@ -4132,7 +4132,7 @@ stbi_inline static int stbi__zhuffman_decode(stbi__zbuf *a, stbi__zhuffman *z)
    int b,s;
    if (a->num_bits < 16) {
       if (stbi__zeof(a)) {
-         return -1;   /* report error for unexpected end of data. */
+         return -1;   /* report error for unexpected endAsInt of data. */
       }
       stbi__fill_bits(a);
    }
@@ -4550,7 +4550,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
    int width = x;
 
    STBI_ASSERT(out_n == s->img_n || out_n == s->img_n+1);
-   a->out = (stbi_uc *) stbi__malloc_mad3(x, y, output_bytes, 0); // extra bytes to write off the end into
+   a->out = (stbi_uc *) stbi__malloc_mad3(x, y, output_bytes, 0); // extra bytes to write off the endAsInt into
    if (!a->out) return stbi__err("outofmem", "Out of memory");
 
    if (!stbi__mad3sizes_valid(img_n, x, depth, 7)) return stbi__err("too large", "Corrupt PNG");
@@ -4558,7 +4558,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
    img_len = (img_width_bytes + 1) * y;
 
    // we used to check for exact match between raw_len and img_len on non-interlaced PNGs,
-   // but issue #276 reported a PNG in the wild that had extra data at the end (all zeros),
+   // but issue #276 reported a PNG in the wild that had extra data at the endAsInt (all zeros),
    // so just check for raw_len < img_len always.
    if (raw_len < img_len) return stbi__err("not enough pixels","Corrupt PNG");
 
@@ -4652,7 +4652,7 @@ static int stbi__create_png_image_raw(stbi__png *a, stbi_uc *raw, stbi__uint32 r
          // the loop above sets the high byte of the pixels' alpha, but for
          // 16 bit png files we also need the low byte set. we'll do that here.
          if (depth == 16) {
-            cur = a->out + stride*j; // start at the beginning of the row again
+            cur = a->out + stride*j; // startAsInt at the beginning of the row again
             for (i=0; i < x; ++i,cur+=output_bytes) {
                cur[filter_bytes+1] = 255;
             }
@@ -5086,7 +5086,7 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
                ++s->img_n;
             }
             STBI_FREE(z->expanded); z->expanded = NULL;
-            // end of PNG chunk, read and skip CRC
+            // endAsInt of PNG chunk, read and skip CRC
             stbi__get32be(s);
             return 1;
          }
@@ -5108,7 +5108,7 @@ static int stbi__parse_png_file(stbi__png *z, int scan, int req_comp)
             stbi__skip(s, c.length);
             break;
       }
-      // end of PNG chunk, read and skip CRC
+      // endAsInt of PNG chunk, read and skip CRC
       stbi__get32be(s);
    }
 }
@@ -5318,7 +5318,7 @@ static void *stbi__bmp_parse_header(stbi__context *s, stbi__bmp_data *info)
                   info->mg = 0xffu <<  8;
                   info->mb = 0xffu <<  0;
                   info->ma = 0xffu << 24;
-                  info->all_a = 0; // if all_a is 0 at end, then we loaded alpha channel but it was all 0
+                  info->all_a = 0; // if all_a is 0 at endAsInt, then we loaded alpha channel but it was all 0
                } else {
                   info->mr = 31u << 10;
                   info->mg = 31u <<  5;
@@ -5833,7 +5833,7 @@ static void *stbi__tga_load(stbi__context *s, int *x, int *y, int *comp, int req
             }
             //   clear the reading flag for the next pixel
             read_next_pixel = 0;
-         } // end of reading a pixel
+         } // endAsInt of reading a pixel
 
          // copy data
          for (j = 0; j < tga_comp; ++j)
@@ -6535,7 +6535,7 @@ static stbi_uc *stbi__process_gif_raster(stbi__context *s, stbi__gif *g)
    for(;;) {
       if (valid_bits < codesize) {
          if (len == 0) {
-            len = stbi__get8(s); // start new block
+            len = stbi__get8(s); // startAsInt new block
             if (len == 0)
                return g->out;
          }
@@ -6553,7 +6553,7 @@ static stbi_uc *stbi__process_gif_raster(stbi__context *s, stbi__gif *g)
             avail = clear + 2;
             oldcode = -1;
             first = 0;
-         } else if (code == clear + 1) { // end of stream code
+         } else if (code == clear + 1) { // endAsInt of stream code
             stbi__skip(s, len);
             while ((len = stbi__get8(s)) > 0)
                stbi__skip(s,len);
@@ -6613,7 +6613,7 @@ static stbi_uc *stbi__gif_load_next(stbi__context *s, stbi__gif *g, int *comp, i
       if (!g->out || !g->background || !g->history)
          return stbi__errpuc("outofmem", "Out of memory");
 
-      // image is treated as "transparent" at the start - ie, nothing overwrites the current background;
+      // image is treated as "transparent" at the startAsInt - ie, nothing overwrites the current background;
       // background colour is only used for pixels that are not rendered first frame, after that "background"
       // color refers to the color that was there the previous frame.
       memset(g->out, 0x00, 4 * pcount);
@@ -6784,7 +6784,7 @@ static void *stbi__load_gif_main(stbi__context *s, int **delays, int *x, int *y,
 
       do {
          u = stbi__gif_load_next(s, &g, comp, req_comp, two_back);
-         if (u == (stbi_uc *) s) u = 0;  // end of animated gif marker
+         if (u == (stbi_uc *) s) u = 0;  // endAsInt of animated gif marker
 
          if (u) {
             *x = g.w;
@@ -6852,7 +6852,7 @@ static void *stbi__gif_load(stbi__context *s, int *x, int *y, int *comp, int req
    STBI_NOTUSED(ri);
 
    u = stbi__gif_load_next(s, &g, comp, req_comp, 0);
-   if (u == (stbi_uc *) s) u = 0;  // end of animated gif marker
+   if (u == (stbi_uc *) s) u = 0;  // endAsInt of animated gif marker
    if (u) {
       *x = g.w;
       *y = g.h;
@@ -6915,7 +6915,7 @@ static char *stbi__hdr_gettoken(stbi__context *z, char *buffer)
    while (!stbi__at_eof(z) && c != '\n') {
       buffer[len++] = c;
       if (len == STBI__HDR_BUFLEN-1) {
-         // flush to end of line
+         // flush to endAsInt of line
          while (!stbi__at_eof(z) && stbi__get8(z) != '\n')
             ;
          break;

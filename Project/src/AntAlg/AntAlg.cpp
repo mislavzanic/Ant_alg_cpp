@@ -39,8 +39,8 @@ namespace mh {
 
     void AntAlg::createSolution(std::map<int, int>& path)
     {
-        int start = mMaze.start();
-        int end = mMaze.end();
+        int start = mMaze.startAsInt();
+        int end = mMaze.endAsInt();
         std::stack<int> toVisit;
         std::map<int, bool> visited;
         toVisit.push(start);
@@ -135,7 +135,7 @@ namespace mh {
 
     void AntAlg::getPath(std::map<int, int> &newPath, std::vector<std::set<int>> &paths)
     {
-        int start = mMaze.start(), end = mMaze.end(), len = 0;
+        int start = mMaze.startAsInt(), end = mMaze.endAsInt(), len = 0;
         std::set<int> path;
         while (end != start)
         {

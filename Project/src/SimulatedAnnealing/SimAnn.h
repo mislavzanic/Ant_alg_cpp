@@ -21,16 +21,15 @@ namespace mh {
         void solve();
 
     private:
-        void initialSolution(std::map<int, int> &path);
-        int getNeighbourPath(std::vector<int>& path);
-        int pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path);
+        std::pair<int, int> pickRandom(int cell);
 
     private:
         Maze mMaze;
         double mCurrentTemp;
         double mStep;
-        int mSolution;
-        std::vector<int> mPath;
+        std::pair<int, int> mSolution;
+        std::pair<int, int> mGoal;
+        std::pair<int, int> mCurrentState;
         double mFinalTemp;
 
         Random<std::mt19937> mRandEngine;

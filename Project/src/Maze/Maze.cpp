@@ -5,9 +5,17 @@
 
 namespace mh {
 
+    Maze::Maze(const std::string& filepath, std::pair<int, int> start, std::pair<int, int> end)
+        : mStart(start), mEnd(end)
+    {
+        loadImageFromFile(filepath);
+    }
+
     Maze::Maze(const std::string& filepath)
     {
         loadImageFromFile(filepath);
+        mStart = {0, 0};
+        mEnd = {mWidth - 1, mHeight - 1};
     }
 
     Maze::~Maze()

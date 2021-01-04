@@ -18,6 +18,7 @@ public:
     Random(int seed = std::time(nullptr)) : m_prng(seed) {}
     int getIntInRange(int low, int high) { return getNumberInRange<UniformIntDistr>(low, high); }
     float getFloatInRange(float low, float high) { return getNumberInRange<UniformDistr<float>>(low, high); }
+    double getDoubleInRange(double low, double high) { return getNumberInRange<UniformDistr<double>>(low, high); }
 
     template <typename T>
     T getNumberInRange(T low, T high) { return getNumberInRange<UniformDistr<T>>(low, high); }
