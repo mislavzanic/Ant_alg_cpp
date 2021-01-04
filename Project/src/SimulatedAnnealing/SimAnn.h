@@ -25,12 +25,16 @@ namespace mh {
 
     private:
         Maze mMaze;
+
         double mCurrentTemp;
+        double mFinalTemp;
         double mStep;
+
         std::pair<int, int> mSolution;
         std::pair<int, int> mGoal;
         std::pair<int, int> mCurrentState;
-        double mFinalTemp;
+
+        std::map<int, int> mPath;
 
         Random<std::mt19937> mRandEngine;
     };

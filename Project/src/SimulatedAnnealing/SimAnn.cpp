@@ -19,32 +19,38 @@ namespace mh {
     void SimAnn::solve()
     {
         std::pair<int, int> prev = mCurrentState;
+        bool foundCell = false;
         while (mCurrentTemp > mFinalTemp)
         {
             std::pair<int, int> neighbor = pickRandom(mCurrentState);
             if (neighbor == prev) continue;
-            else if (neighbor == mGoal) break;
+            else if (neighbor == mGoal)
+            {
+                foundCell = true;
+                break;
+            }
+            else if (neighbor == std::make_pair(-1, -1)) break;
+            mPath[prev.first + prev.second * mMaze.width()] = neighbor.first + neighbor.second * mMaze.width();
             prev = neighbor;
             int neighborValue = abs(mGoal.first - neighbor.first) + abs(mGoal.second - neighbor.second);
             int solutionValue = abs(mGoal.first - mSolution.first) + abs(mGoal.second - mSolution.second);
             int costDiff = solutionValue - neighborValue;
 
-            if (costDiff > 0)
-            {
-                mSolution = neighbor;
-            }
+            if (costDiff > 0) mSolution = neighbor;
             else
             {
                 double prob = std::exp(costDiff / mCurrentTemp);
                 double rand = mRandEngine.getDoubleInRange(0, 1);
-                if (rand < prob)
-                {
-                    mSolution = neighbor;
-                }
+                if (rand < prob) mSolution = neighbor;
             }
 
             mCurrentTemp -= mStep;
         }
+        if (!foundCell)
+        {
+            // return null;
+        }
+        // return nesto;
     }
 
 
