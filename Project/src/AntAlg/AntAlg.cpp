@@ -12,14 +12,15 @@
 namespace mh {
 
     AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p)
-        : mMaze(filepath), mFirstTraverse(true), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen), mDecreaseFactor(p), mRandEngine(),
+        : mMaze(filepath), mFirstTraverse(true), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen), mDecreaseFactor(p), mRandEngine(),
           mPheromones(new double[mMaze.width() * mMaze.height()]), mAllPheromones(new double[mMaze.width() *
                                                                                              mMaze.height()])
     {
         for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
     }
 
-    void AntAlg::solve(int numOfIterations) {
+    std::map<int, int> AntAlg::solve(int numOfIterations)
+    {
         int j = numOfIterations;
         initialSolution();
         while (j)
@@ -35,6 +36,8 @@ namespace mh {
             updatePheromone(paths);
             j--;
         }
+
+        return mBestPath;
     }
 
     void AntAlg::createSolution(std::map<int, int>& path)
@@ -112,7 +115,7 @@ namespace mh {
         std::stack<int> tempS;
         while (sum > 0)
         {
-            double r = mRandEngine.getFloatInRange(0, sum);
+            double r = mRandEngine.getDoubleInRange(0, sum);
             double total = 0;
             for (int num : order)
             {
@@ -146,6 +149,12 @@ namespace mh {
         path.insert(start);
         for (int c:path) mAllPheromones[c] += (double)1/len;
         paths.push_back(path);
+        if (len < mBestPathLen || mBestPathLen == -1)
+        {
+            mBestPathLen = len;
+            mBestPath = newPath;
+        }
+
     }
 
     void AntAlg::increasePheromones(int Ant, const std::vector<std::set<int>>& bestPaths)

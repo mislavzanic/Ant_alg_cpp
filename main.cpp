@@ -2,6 +2,6 @@
 
 int main()
 {
-    mh::Maze m("");
+    mh::AntAlg a("", 20, 7, 0.1f);
     return 0;
 }

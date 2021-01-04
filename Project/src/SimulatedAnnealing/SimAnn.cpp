@@ -15,8 +15,7 @@ namespace mh {
     }
 
     // TODO: napraviti solveWithWisitedSet()
-    // TODO: obije solve funkcije vracaju pointer na rjesenje il tak nes -- za web kasnije
-    void SimAnn::solve()
+    std::map<int, int> SimAnn::solve()
     {
         std::pair<int, int> prev = mCurrentState;
         bool foundCell = false;
@@ -46,11 +45,9 @@ namespace mh {
 
             mCurrentTemp -= mStep;
         }
-        if (!foundCell)
-        {
-            // return null;
-        }
-        // return nesto;
+
+        if (!foundCell) return {};
+        return mPath;
     }
 
 
@@ -68,8 +65,7 @@ namespace mh {
         std::shuffle(order.begin(), order.end(), mRandEngine.getEngine());
         for (auto& kv : cellIndex)
         {
-            if (kv.second != nil)
-                return kv.second;
+            if (kv.second != nil) return kv.second;
         }
         return nil;
     }

@@ -18,7 +18,7 @@ namespace mh {
     {
     public:
         SimAnn(const std::string& filepath, double minTemp, double maxTemp, double step);
-        void solve();
+        std::map<int, int> solve();
 
     private:
         std::pair<int, int> pickRandom(std::pair<int, int> cell);

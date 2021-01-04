@@ -22,7 +22,7 @@ namespace mh {
         //using Ant = std::pair<int, int>;
 
         AntAlg(const std::string& filepath, int numOfAnts, int subsetLen, double p);
-        void solve(int numOfIterations);
+        std::map<int, int> solve(int numOfIterations);
 
     private:
         void createSolution(std::map<int, int>& path);
@@ -46,6 +46,9 @@ namespace mh {
         double *mPheromones;
         double *mAllPheromones;
         double mDecreaseFactor;
+
+        std::map<int, int> mBestPath;
+        int mBestPathLen;
 
         Random<std::mt19937> mRandEngine;
     };
