@@ -21,7 +21,7 @@ namespace mh {
         void solve();
 
     private:
-        std::pair<int, int> pickRandom(int cell);
+        std::pair<int, int> pickRandom(std::pair<int, int> cell);
 
     private:
         Maze mMaze;

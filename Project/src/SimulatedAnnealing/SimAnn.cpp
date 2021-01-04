@@ -14,11 +14,17 @@ namespace mh {
     {
     }
 
+    // TODO: napraviti solveWithWisitedSet()
+    // TODO: obije solve funkcije vracaju pointer na rjesenje il tak nes -- za web kasnije
     void SimAnn::solve()
     {
+        std::pair<int, int> prev = mCurrentState;
         while (mCurrentTemp > mFinalTemp)
         {
-            std::pair<int, int> neighbor = pickRandom(mCurrentState.first + mCurrentState.second * mMaze.width());
+            std::pair<int, int> neighbor = pickRandom(mCurrentState);
+            if (neighbor == prev) continue;
+            else if (neighbor == mGoal) break;
+            prev = neighbor;
             int neighborValue = abs(mGoal.first - neighbor.first) + abs(mGoal.second - neighbor.second);
             int solutionValue = abs(mGoal.first - mSolution.first) + abs(mGoal.second - mSolution.second);
             int costDiff = solutionValue - neighborValue;
@@ -42,18 +48,24 @@ namespace mh {
     }
 
 
-    std::pair<int, int> SimAnn::pickRandom(int cell)
+    std::pair<int, int> SimAnn::pickRandom(std::pair<int, int> cell)
     {
-        // TODO:popraviti fuckiju td radi sa parovima...
         std::array<int, 4> order{1,2,3,4};
-        std::map<int, int> cellIndex
+        std::pair<int, int> nil = {-1, -1};
+        std::map<int, std::pair<int, int>> cellIndex
         {
-            {1, cell < mMaze.width() ? -1 : cell - mMaze.width()},
-            {2, cell + mMaze.width() > mMaze.width() * mMaze.height() ? -1 : cell + mMaze.width()},
-            {3, cell % mMaze.width() ? cell - 1 : -1},
-            {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
+            {1, cell.first > 0 ? std::make_pair(cell.first - 1, cell.second) : nil},
+            {2, cell.first < mMaze.width() - 1 ? std::make_pair(cell.first + 1, cell.second) : nil},
+            {3, cell.second > 0 ? std::make_pair(cell.first, cell.second - 1) : nil},
+            {4, cell.second < mMaze.height() - 1 ? std::make_pair(cell.first, cell.second + 1) : nil}
         };
         std::shuffle(order.begin(), order.end(), mRandEngine.getEngine());
+        for (auto& kv : cellIndex)
+        {
+            if (kv.second != nil)
+                return kv.second;
+        }
+        return nil;
     }
 }
 
