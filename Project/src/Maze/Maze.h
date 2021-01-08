@@ -13,8 +13,8 @@ namespace mh {
     {
     public:
         Maze(const std::string& filepath);
-
-        Maze(const std::string &filepath, std::pair<int, int> start, std::pair<int, int> end);
+        Maze(const Maze &maze);
+        Maze(Maze &&maze) noexcept;
 
         ~Maze();
 

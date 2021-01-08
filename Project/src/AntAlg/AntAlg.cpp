@@ -8,13 +8,22 @@
 #include <algorithm>
 #include <set>
 #include <map>
+#include <iostream>
 
 namespace mh {
 
     AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p)
-        : mMaze(filepath), mFirstTraverse(true), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen), mDecreaseFactor(p), mRandEngine(),
-          mPheromones(new double[mMaze.width() * mMaze.height()]), mAllPheromones(new double[mMaze.width() *
-                                                                                             mMaze.height()])
+        : mMaze(filepath), mFirstTraverse(true), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
+          mDecreaseFactor(p), mRandEngine(), mPheromones(new double[mMaze.width() * mMaze.height()]),
+          mAllPheromones(new double[mMaze.width() * mMaze.height()])
+    {
+        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
+    }
+
+    AntAlg::AntAlg(const Maze &maze, int numOfAnts, int subsetLen, double p)
+        : mMaze(maze), mFirstTraverse(true), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
+          mDecreaseFactor(p), mRandEngine(), mPheromones(new double[mMaze.width() * mMaze.height()]),
+          mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
         for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
     }
@@ -47,14 +56,18 @@ namespace mh {
         std::stack<int> toVisit;
         std::map<int, bool> visited;
         toVisit.push(start);
+        int prev = toVisit.top(), curr;
         while (!toVisit.empty())
         {
-            auto curr = toVisit.top();
-            if (curr == end) break;
+            curr = toVisit.top();
             toVisit.pop();
             if (visited[curr]) continue;
             visited[curr] = true;
-            pickRandom(curr, toVisit, path);
+            path[curr] = prev;
+            if (curr == end)
+                break;
+            pickRandom(curr, toVisit);
+            prev = curr;
         }
     }
 
@@ -65,25 +78,23 @@ namespace mh {
 
         createSolution(startPath);
         getPath(startPath, paths);
-        updatePheromone(paths);
+        increasePheromones(paths[0]);
         mFirstTraverse = false;
     }
 
     void AntAlg::updatePheromone(const std::vector<std::set<int>>& bestPaths)
     {
-         for (auto& s:bestPaths)
-         {
-             for (int c:s) increasePheromones(c, bestPaths);
-         }
-
-         for (int i = 0; i < mMaze.width() * mMaze.height(); ++i)
-         {
-             if (mPheromones[i] > 0) decreasePheromones(i);
-             mAllPheromones[i] = 0;
-         }
+        for (int i = 0; i < mSubsetLen; ++i)
+            increasePheromones(bestPaths[i]);
+        if (mFirstTraverse) return;
+        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i)
+        {
+            if (mPheromones[i] > 0) decreasePheromones(i);
+            mAllPheromones[i] = 0;
+        }
     }
 
-    void AntAlg::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path)
+    void AntAlg::pickRandom(int cell, std::stack<int>& toVisit)
     {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
@@ -108,8 +119,6 @@ namespace mh {
                 {
                     sum += mPheromones[cellIndex[num]];
                 }
-
-                path[cellIndex[num]] = cell;
             }
         }
         std::stack<int> tempS;
@@ -154,15 +163,11 @@ namespace mh {
             mBestPathLen = len;
             mBestPath = newPath;
         }
-
     }
 
-    void AntAlg::increasePheromones(int Ant, const std::vector<std::set<int>>& bestPaths)
+    void AntAlg::increasePheromones(const std::set<int>& path)
     {
-        std::for_each(bestPaths.begin(), bestPaths.begin() + mSubsetLen, [this](auto &s)
-        {
-            for (auto cell : s) this->mPheromones[cell] += this->mAllPheromones[cell];
-        });
+        for (auto cell : path) this->mPheromones[cell] += this->mAllPheromones[cell];
     }
 
     void AntAlg::decreasePheromones(int Ant)
@@ -174,5 +179,4 @@ namespace mh {
     {
         std::sort(paths.begin(), paths.end(), [](auto& a, auto& b){ return a.size() < b.size(); });
     }
-
 }

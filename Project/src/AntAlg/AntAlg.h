@@ -17,11 +17,11 @@
 
 namespace mh {
 
-    class AntAlg {
+    class AntAlg
+    {
     public:
-        //using Ant = std::pair<int, int>;
-
         AntAlg(const std::string& filepath, int numOfAnts, int subsetLen, double p);
+        AntAlg(const Maze& maze, int numOfAnts, int subsetLen, double p);
         std::map<int, int> solve(int numOfIterations);
 
     private:
@@ -29,11 +29,11 @@ namespace mh {
         void initialSolution();
 
         void getPath(std::map<int, int>& newPath, std::vector<std::set<int>>& paths);
-        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& path);
+        void pickRandom(int cell, std::stack<int>& toVisit);
         void getSubset(std::vector<std::set<int>>& paths) const;
 
         void updatePheromone(const std::vector<std::set<int>>& bestPaths);
-        void increasePheromones(int Ant, const std::vector<std::set<int>>& bestPaths);
+        void increasePheromones(const std::set<int>& path);
         void decreasePheromones(int Ant);
 
     private:
