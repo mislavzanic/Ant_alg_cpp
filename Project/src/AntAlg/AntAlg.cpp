@@ -118,7 +118,8 @@ namespace mh {
                     toVisit.push(cellIndex[num]);
                 else
                 {
-                    cellsToPick++;
+                    if (mPheromones[cellIndex[num]] > 0)
+                        cellsToPick++;
                     sum += mPheromones[cellIndex[num]];
                 }
             }

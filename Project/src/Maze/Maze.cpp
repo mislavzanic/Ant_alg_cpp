@@ -3,6 +3,7 @@
 #include "stb_image_write.h"
 
 #include <cstdlib>
+#include <queue>
 #include <iostream>
 
 namespace mh {
@@ -80,5 +81,17 @@ namespace mh {
 
         stbi_write_bmp("new_img.bmp", mWidth, mHeight, mChannels, newImg);
         delete[] newImg;
+    }
+
+    std::map<int, int> Maze::solveBFS()
+    {
+        std::queue<int> Q;
+        std::map<int, int> path;
+        Q.push(startAsInt());
+        while (!Q.empty())
+        {
+
+        }
+        return path;
     }
 }

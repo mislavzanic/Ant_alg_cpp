@@ -31,6 +31,7 @@ namespace mh {
         int height() const { return mHeight; }
 
         void modifyImage(std::map<int, int>& path);
+        std::map<int, int> solveBFS();
 
     private:
         void loadImageFromFile(const std::string& filepath);
