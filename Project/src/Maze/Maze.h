@@ -30,8 +30,7 @@ namespace mh {
         int width() const { return mWidth; }
         int height() const { return mHeight; }
 
-        void modifyImage(std::map<int, int>& path);
-        std::map<int, int> solveBFS();
+        void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t> color, const std::string& filename);
 
     private:
         void loadImageFromFile(const std::string& filepath);

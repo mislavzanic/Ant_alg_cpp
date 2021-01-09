@@ -64,34 +64,30 @@ namespace mh {
         }
     }
 
-    void Maze::modifyImage(std::map<int, int> &path)
+    void Maze::modifyImage(std::map<int, int> &path, std::tuple<uint8_t, uint8_t, uint8_t> color, const std::string& filename)
     {
         size_t imgSize = mWidth * mHeight * mChannels;
         stbi_uc* newImg = new stbi_uc[imgSize];
         int i = 0;
         for (stbi_uc *p = mData, *np = newImg; p != mData + imgSize; p += mChannels, np += mChannels)
         {
-            if (path[i] != 0) *np = 0;
-            else *np = *p;
-            *(np + 1) = *(p + 1);
-            *(np + 2) = *(p + 2);
+            if (path[i] != 0)
+            {
+                *np = std::get<0>(color);
+                *(np + 1) = std::get<1>(color);
+                *(np + 2) = std::get<2>(color);
+            }
+            else
+            {
+                *np = *p;
+                *(np + 1) = *(p + 1);
+                *(np + 2) = *(p + 2);
+            }
             if (mChannels == 4) *(np + 3) = *(p + 3);
             i++;
         }
 
-        stbi_write_bmp("new_img.bmp", mWidth, mHeight, mChannels, newImg);
+        stbi_write_bmp(filename.c_str(), mWidth, mHeight, mChannels, newImg);
         delete[] newImg;
-    }
-
-    std::map<int, int> Maze::solveBFS()
-    {
-        std::queue<int> Q;
-        std::map<int, int> path;
-        Q.push(startAsInt());
-        while (!Q.empty())
-        {
-
-        }
-        return path;
     }
 }

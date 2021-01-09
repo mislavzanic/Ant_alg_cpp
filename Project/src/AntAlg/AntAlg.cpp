@@ -64,8 +64,7 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             path[curr] = prev;
-            if (curr == end)
-                break;
+            if (curr == end) break;
             pickRandom(curr, toVisit);
             prev = curr;
         }
