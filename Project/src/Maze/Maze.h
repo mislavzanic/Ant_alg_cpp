@@ -6,6 +6,8 @@
 #define MHRAD_MAZE_H
 
 #include <string>
+#include <map>
+#include <stb_image.h>
 
 namespace mh {
 
@@ -28,15 +30,19 @@ namespace mh {
         int width() const { return mWidth; }
         int height() const { return mHeight; }
 
+        void modifyImage(std::map<int, int>& path);
+
     private:
         void loadImageFromFile(const std::string& filepath);
 
     private:
         int mHeight;
         int mWidth;
+        int mChannels;
         std::pair<int, int> mStart;
         std::pair<int, int> mEnd;
         bool *mMaze;
+        stbi_uc* mData;
     };
 }
 

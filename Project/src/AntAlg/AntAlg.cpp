@@ -105,6 +105,7 @@ namespace mh {
             {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
         };
         double sum = 0;
+        int cellsToPick = 0;
         if (mFirstTraverse)
         {
             std::shuffle(order.begin(), order.end(), mRandEngine.getEngine());
@@ -117,19 +118,22 @@ namespace mh {
                     toVisit.push(cellIndex[num]);
                 else
                 {
+                    cellsToPick++;
                     sum += mPheromones[cellIndex[num]];
                 }
             }
         }
         std::stack<int> tempS;
-        while (sum > 0)
+        std::set<int> duplicates;
+        while (sum > 0 && cellsToPick > duplicates.size())
         {
             double r = mRandEngine.getDoubleInRange(0, sum);
             double total = 0;
             for (int num : order)
             {
-                if (mPheromones[cellIndex[num]] != 0 && mPheromones[cellIndex[num]] + total >= r)
+                if (mPheromones[cellIndex[num]] != 0 && mPheromones[cellIndex[num]] + total >= r && duplicates.find(cellIndex[num]) == duplicates.end())
                 {
+                    duplicates.insert(cellIndex[num]);
                     tempS.push(cellIndex[num]);
                     sum -= mPheromones[cellIndex[num]];
                     break;

@@ -1,5 +1,6 @@
 #include "Maze.h"
 #include "stb_image.h"
+#include "stb_image_write.h"
 
 #include <cstdlib>
 #include <iostream>
@@ -32,18 +33,16 @@ namespace mh {
 
     void Maze::loadImageFromFile(const std::string &filepath)
     {
-        int channels;
-        stbi_uc *data = stbi_load(filepath.c_str(), &mWidth, &mHeight, &channels, 0);
-        if (data == nullptr)
+        mData = stbi_load(filepath.c_str(), &mWidth, &mHeight, &mChannels, 0);
+        if (mData == nullptr)
         {
-            std::cout << "data is null" << std::endl;
+            std::cout << "mData is null" << std::endl;
             return;
         }
-        size_t dataSize = mWidth * mHeight * channels;
+        size_t dataSize = mWidth * mHeight * mChannels;
         mMaze = new bool[mHeight * mWidth];
         int i = 0, j = 0;
-        std::cout << channels << std::endl;
-        for (auto* p = data; p != data + dataSize; p += channels)
+        for (auto* p = mData; p != mData + dataSize; p += mChannels)
         {
             mMaze[i * mWidth + j] = (bool)(*p);
             if (i == 0 && mMaze[i * mWidth + j] != 0)
@@ -62,5 +61,24 @@ namespace mh {
                 i++;
             }
         }
+    }
+
+    void Maze::modifyImage(std::map<int, int> &path)
+    {
+        size_t imgSize = mWidth * mHeight * mChannels;
+        stbi_uc* newImg = new stbi_uc[imgSize];
+        int i = 0;
+        for (stbi_uc *p = mData, *np = newImg; p != mData + imgSize; p += mChannels, np += mChannels)
+        {
+            if (path[i] != 0) *np = 0;
+            else *np = *p;
+            *(np + 1) = *(p + 1);
+            *(np + 2) = *(p + 2);
+            if (mChannels == 4) *(np + 3) = *(p + 3);
+            i++;
+        }
+
+        stbi_write_bmp("new_img.bmp", mWidth, mHeight, mChannels, newImg);
+        delete[] newImg;
     }
 }
