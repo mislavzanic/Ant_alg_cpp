@@ -6,7 +6,7 @@ using namespace mh;
 int main()
 {
     Maze m("/home/mislav/CLionProjects/mhRad/assets/m2.bmp");
-    AntAlg a(m, 15, 5, 0.3f);
+    AntAlg a(m, 10, 4, 0.7f);
     std::map<int, int> solution = a.solve(30);
     m.modifyImage(solution, {123, 64, 200}, "ant.bmp");
     solution = BFS(m);
