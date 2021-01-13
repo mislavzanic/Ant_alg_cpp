@@ -13,7 +13,19 @@ namespace mh {
         mCurrentTemp(maxTemp), mFinalTemp(minTemp), mStep(step)
     {
     }
+    
+    SimAnn::SimAnn(const Maze& m, double minTemp, double maxTemp, double step)
+        : mMaze(m), mCurrentState({0, 0}), mSolution({0, 0}), mGoal({mMaze.width(), mMaze.height()}),
+        mCurrentTemp(maxTemp), mFinalTemp(minTemp), mStep(step)
+    {
+    }
 
+    SimAnn::SimAnn(Maze&& m, double minTemp, double maxTemp, double step)
+        : mMaze(std::move(m)), mCurrentState({0, 0}), mSolution({0, 0}), mGoal({mMaze.width(), mMaze.height()}),
+        mCurrentTemp(maxTemp), mFinalTemp(minTemp), mStep(step)
+    {
+    }
+    
     // TODO: napraviti solveWithWisitedSet()
     std::map<int, int> SimAnn::solve()
     {

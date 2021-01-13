@@ -18,6 +18,8 @@ namespace mh {
     {
     public:
         SimAnn(const std::string& filepath, double minTemp, double maxTemp, double step);
+        SimAnn(const Maze& m, double minTemp, double maxTemp, double step);
+        SimAnn(Maze&& m, double minTemp, double maxTemp, double step);
         std::map<int, int> solve();
 
     private:

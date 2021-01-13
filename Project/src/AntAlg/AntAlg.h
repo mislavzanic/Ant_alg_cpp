@@ -12,6 +12,7 @@
 #include <stack>
 #include <utility>
 #include <set>
+#include <cmath>
 #include <map>
 
 
@@ -20,8 +21,8 @@ namespace mh {
     class AntAlg
     {
     public:
-        AntAlg(const std::string& filepath, int numOfAnts, int subsetLen, double p);
-        AntAlg(const Maze& maze, int numOfAnts, int subsetLen, double p);
+        AntAlg(const std::string& filepath, int numOfAnts, int subsetLen, double p, double startPheromones);
+        AntAlg(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones);
         std::map<int, int> solve(int numOfIterations);
 
     private:
@@ -36,12 +37,13 @@ namespace mh {
         void increasePheromones(const std::set<int>& path);
         void decreasePheromones(int Ant);
 
+        int heuristics(int cell) { return std::abs(cell % mMaze.height() - mMaze.end().first) - std::abs(cell / mMaze.height() - mMaze.end().second); }
+
     private:
         Maze mMaze;
 
         int mSubsetLen;
         int mNumOfAnts;
-        bool mFirstTraverse;
 
         double *mPheromones;
         double *mAllPheromones;

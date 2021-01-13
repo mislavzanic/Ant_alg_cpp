@@ -6,32 +6,40 @@
 #include <stack>
 #include <array>
 #include <algorithm>
+#include <cassert>
 #include <set>
 #include <map>
 #include <iostream>
 
 namespace mh {
 
-    AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p)
-        : mMaze(filepath), mFirstTraverse(true), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
+    AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p, double startPheromones)
+        : mMaze(filepath), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
           mDecreaseFactor(p), mRandEngine(), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
-        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
+        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) 
+        {
+            mAllPheromones[i] = 0;
+            mPheromones[i] = startPheromones;
+        }
     }
 
-    AntAlg::AntAlg(const Maze &maze, int numOfAnts, int subsetLen, double p)
-        : mMaze(maze), mFirstTraverse(true), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
+    AntAlg::AntAlg(const Maze &maze, int numOfAnts, int subsetLen, double p, double startPheromones)
+        : mMaze(maze), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
           mDecreaseFactor(p), mRandEngine(), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
-        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) mPheromones[i] = mAllPheromones[i] = 0;
+        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i)
+        {
+            mPheromones[i] = startPheromones;
+            mAllPheromones[i] = 0;
+        }
     }
 
     std::map<int, int> AntAlg::solve(int numOfIterations)
     {
         int j = numOfIterations;
-        initialSolution();
         while (j)
         {
             std::vector<std::set<int>> paths;
@@ -64,28 +72,17 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             path[curr] = prev;
-            if (curr == end) break;
+            if (curr == end) 
+                break;
             pickRandom(curr, toVisit);
             prev = curr;
         }
-    }
-
-    void AntAlg::initialSolution()
-    {
-        std::vector<std::set<int>> paths;
-        std::map<int, int> startPath;
-
-        createSolution(startPath);
-        getPath(startPath, paths);
-        increasePheromones(paths[0]);
-        mFirstTraverse = false;
     }
 
     void AntAlg::updatePheromone(const std::vector<std::set<int>>& bestPaths)
     {
         for (int i = 0; i < mSubsetLen; ++i)
             increasePheromones(bestPaths[i]);
-        if (mFirstTraverse) return;
         for (int i = 0; i < mMaze.width() * mMaze.height(); ++i)
         {
             if (mPheromones[i] > 0) decreasePheromones(i);
@@ -93,6 +90,7 @@ namespace mh {
         }
     }
 
+    // refactor sutra!!
     void AntAlg::pickRandom(int cell, std::stack<int>& toVisit)
     {
         std::array<int, 4> order{1,2,3,4};
@@ -105,24 +103,17 @@ namespace mh {
         };
         double sum = 0;
         int cellsToPick = 0;
-        if (mFirstTraverse)
-        {
-            std::shuffle(order.begin(), order.end(), mRandEngine.getEngine());
-        }
         for (int num : order)
         {
             if (cellIndex[num] != -1 && mMaze[cellIndex[num]])
             {
-                if (mFirstTraverse)
-                    toVisit.push(cellIndex[num]);
-                else
-                {
-                    if (mPheromones[cellIndex[num]] > 0)
-                        cellsToPick++;
-                    sum += mPheromones[cellIndex[num]];
-                }
+                if (mPheromones[cellIndex[num]] > 0)
+                    cellsToPick++;
+                
+                sum += mPheromones[cellIndex[num]];
             }
         }
+
         std::stack<int> tempS;
         std::set<int> duplicates;
         while (sum > 0 && cellsToPick > duplicates.size())
@@ -131,7 +122,7 @@ namespace mh {
             double total = 0;
             for (int num : order)
             {
-                if (mPheromones[cellIndex[num]] != 0 && mPheromones[cellIndex[num]] + total >= r && duplicates.find(cellIndex[num]) == duplicates.end())
+                if (mPheromones[cellIndex[num]] != 0 && mPheromones[cellIndex[num]] + total >= r && duplicates.find(cellIndex[num]) == duplicates.end() && mMaze[cellIndex[num]])
                 {
                     duplicates.insert(cellIndex[num]);
                     tempS.push(cellIndex[num]);
@@ -155,6 +146,7 @@ namespace mh {
         std::set<int> path;
         while (end != start)
         {
+            assert(end != 0);
             len++;
             path.insert(end);
             end = newPath[end];
