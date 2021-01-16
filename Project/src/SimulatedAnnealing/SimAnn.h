@@ -21,9 +21,10 @@ namespace mh {
         SimAnn(const Maze& m, double minTemp, double maxTemp, double step);
         SimAnn(Maze&& m, double minTemp, double maxTemp, double step);
         std::map<int, int> solve();
+        int heuristics(const std::pair<int, int>& a, const std::pair<int, int>& b) const {return abs(a.first - b.first) + abs(a.second - b.second); }
 
     private:
-        std::pair<int, int> pickRandom(std::pair<int, int> cell);
+        bool pickRandom(std::pair<int, int> cell, std::stack<int>& toVisit);
 
     private:
         Maze mMaze;
@@ -34,11 +35,8 @@ namespace mh {
 
         std::pair<int, int> mSolution;
         std::pair<int, int> mGoal;
-        std::pair<int, int> mCurrentState;
 
         std::map<int, int> mPath;
-
-        Random<std::mt19937> mRandEngine;
     };
 }
 

@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <stb_image.h>
+#include "util/Random.h"
 
 namespace mh {
 
@@ -23,12 +24,17 @@ namespace mh {
         const bool& operator[](int index) const { return mMaze[index]; }
         bool& operator[](int index) { return mMaze[index]; }
 
-        int startAsInt() const { return mStart.first + mStart.second * mWidth; }
-        int endAsInt() const { return mEnd.first + mEnd.second * mWidth; }
+        int startAsInt() const { return pairToInt(mStart); }
+        int endAsInt() const { return pairToInt(mEnd); }
         std::pair<int, int> start() const { return mStart; }
         std::pair<int, int> end() const { return mEnd; }
         int width() const { return mWidth; }
         int height() const { return mHeight; }
+
+        int pairToInt(const std::pair<int, int> coord) const { return coord.first + coord.second * mWidth; }
+        std::pair<int, int> intToPair(int coord) const { return std::make_pair<int, int>(coord % mWidth, coord / mWidth); }
+
+        Random<std::mt19937>& getEngine() { return mRandEngine; };
 
         void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t> color, const std::string& filename);
 
@@ -43,6 +49,8 @@ namespace mh {
         std::pair<int, int> mEnd;
         bool *mMaze;
         stbi_uc* mData;
+
+        Random<std::mt19937> mRandEngine;
     };
 }
 

@@ -16,6 +16,8 @@ class Random {
 
 public:
     Random(int seed = std::time(nullptr)) : m_prng(seed) {}
+    Random(const Random& r) : m_prng(r.m_prng) {}
+    Random(Random&& r) : m_prng(std::move(r.m_prng)) {}
     int getIntInRange(int low, int high) { return getNumberInRange<UniformIntDistr>(low, high); }
     float getFloatInRange(float low, float high) { return getNumberInRange<UniformDistr<float>>(low, high); }
     double getDoubleInRange(double low, double high) { return getNumberInRange<UniformDistr<double>>(low, high); }

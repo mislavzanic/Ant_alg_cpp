@@ -15,14 +15,14 @@ namespace mh {
 
     Maze::Maze(const Maze &maze)
         : mHeight(maze.mHeight), mWidth(maze.mWidth), mStart(maze.mStart), mEnd(maze.mEnd),
-          mMaze(new bool[mHeight * mWidth])
+          mMaze(new bool[mHeight * mWidth]), mRandEngine(maze.mRandEngine)
     {
         for (int i = 0; i < mWidth * mHeight; ++i) mMaze[i] = maze[i];
     }
 
     Maze::Maze(Maze &&maze) noexcept
         : mHeight(maze.mHeight), mWidth(maze.mWidth), mStart(maze.mStart), mEnd(maze.mEnd),
-          mMaze(maze.mMaze)
+          mMaze(maze.mMaze), mRandEngine(std::move(maze.mRandEngine))
     {
         maze.mMaze = nullptr;
     }

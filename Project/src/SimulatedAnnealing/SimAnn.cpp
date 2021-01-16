@@ -1,7 +1,4 @@
-//
-// Created by mislav on 12/26/20.
-//
-
+#include <iostream>
 #include <algorithm>
 #include <cmath>
 #include "SimAnn.h"
@@ -9,64 +6,79 @@
 namespace mh {
 
     SimAnn::SimAnn(const std::string &filepath, double minTemp, double maxTemp, double step)
-        : mMaze(filepath), mCurrentState({0, 0}), mSolution({0, 0}), mGoal({mMaze.width(), mMaze.height()}),
+        : mMaze(filepath), mSolution({0, 0}), mGoal({mMaze.width(), mMaze.height()}),
         mCurrentTemp(maxTemp), mFinalTemp(minTemp), mStep(step)
     {
     }
-    
+
     SimAnn::SimAnn(const Maze& m, double minTemp, double maxTemp, double step)
-        : mMaze(m), mCurrentState({0, 0}), mSolution({0, 0}), mGoal({mMaze.width(), mMaze.height()}),
+        : mMaze(m), mSolution({mMaze.start().first, mMaze.start().second}),
+        mGoal({mMaze.end().first, mMaze.end().second}),
         mCurrentTemp(maxTemp), mFinalTemp(minTemp), mStep(step)
     {
     }
 
     SimAnn::SimAnn(Maze&& m, double minTemp, double maxTemp, double step)
-        : mMaze(std::move(m)), mCurrentState({0, 0}), mSolution({0, 0}), mGoal({mMaze.width(), mMaze.height()}),
+        : mMaze(std::move(m)), mSolution({mMaze.start().first, mMaze.start().second}), 
+        mGoal({mMaze.end().first, mMaze.end().second}),
         mCurrentTemp(maxTemp), mFinalTemp(minTemp), mStep(step)
     {
     }
     
-    // TODO: napraviti solveWithWisitedSet()
     std::map<int, int> SimAnn::solve()
     {
-        std::pair<int, int> prev = mCurrentState;
-        bool foundCell = false;
+        std::pair<int, int> prev = mSolution;
+        std::stack<int> toVisit;
+        std::map<int, bool> visited;
+        toVisit.push(mMaze.startAsInt());
         while (mCurrentTemp > mFinalTemp)
         {
-            std::pair<int, int> neighbor = pickRandom(mCurrentState);
-            if (neighbor == prev) continue;
-            else if (neighbor == mGoal)
+            while (!pickRandom(mSolution, toVisit))
             {
-                foundCell = true;
-                break;
+                toVisit.pop();
+                if (toVisit.empty()) return mPath;
+                mSolution = mMaze.intToPair(toVisit.top());
             }
-            else if (neighbor == std::make_pair(-1, -1)) break;
-            mPath[prev.first + prev.second * mMaze.width()] = neighbor.first + neighbor.second * mMaze.width();
-            prev = neighbor;
-            int neighborValue = abs(mGoal.first - neighbor.first) + abs(mGoal.second - neighbor.second);
-            int solutionValue = abs(mGoal.first - mSolution.first) + abs(mGoal.second - mSolution.second);
-            int costDiff = solutionValue - neighborValue;
 
-            if (costDiff > 0) mSolution = neighbor;
+            std::pair<int, int> nextCell = mMaze.intToPair(toVisit.top());
+            toVisit.pop();
+            if (visited[mMaze.pairToInt(nextCell)]) continue;
+            visited[mMaze.pairToInt(nextCell)] = true;
+            mPath[mMaze.pairToInt(mSolution)] = mMaze.pairToInt(nextCell);
+            if (nextCell == mGoal) return mPath;
+
+            int nextCellValue = heuristics(mGoal, nextCell);
+            int solutionValue = heuristics(mGoal, mSolution);
+            int costDiff = solutionValue - nextCellValue;
+
+            if (costDiff > 0) 
+            {
+                prev = mSolution;
+                mSolution = nextCell;
+            }
             else
             {
                 double prob = std::exp(costDiff / mCurrentTemp);
-                double rand = mRandEngine.getDoubleInRange(0, 1);
-                if (rand < prob) mSolution = neighbor;
+                double rand = mMaze.getEngine().getDoubleInRange(0, 1);
+                if (rand < prob)
+                {
+                    prev = mSolution;
+                    mSolution = nextCell;
+                }
             }
 
-            mCurrentTemp -= mStep;
+            mCurrentTemp *= mStep;
         }
 
-        if (!foundCell) return {};
         return mPath;
     }
 
 
-    std::pair<int, int> SimAnn::pickRandom(std::pair<int, int> cell)
+    bool SimAnn::pickRandom(std::pair<int, int> cell, std::stack<int>& toVisit)
     {
         std::array<int, 4> order{1,2,3,4};
         std::pair<int, int> nil = {-1, -1};
+        bool found = false;
         std::map<int, std::pair<int, int>> cellIndex
         {
             {1, cell.first > 0 ? std::make_pair(cell.first - 1, cell.second) : nil},
@@ -74,12 +86,16 @@ namespace mh {
             {3, cell.second > 0 ? std::make_pair(cell.first, cell.second - 1) : nil},
             {4, cell.second < mMaze.height() - 1 ? std::make_pair(cell.first, cell.second + 1) : nil}
         };
-        std::shuffle(order.begin(), order.end(), mRandEngine.getEngine());
-        for (auto& kv : cellIndex)
+        std::shuffle(order.begin(), order.end(), mMaze.getEngine().getEngine());
+        for (int i : order)
         {
-            if (kv.second != nil) return kv.second;
+            if (cellIndex[i] != nil && mMaze[mMaze.pairToInt(cellIndex[i])])
+            {
+                toVisit.push(mMaze.pairToInt(cellIndex[i]));
+                found = true;
+            }
         }
-        return nil;
+        return found;
     }
 }
 

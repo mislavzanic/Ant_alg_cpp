@@ -37,7 +37,9 @@ namespace mh {
         void increasePheromones(const std::set<int>& path);
         void decreasePheromones(int Ant);
 
-        int heuristics(int cell) { return std::abs(cell % mMaze.height() - mMaze.end().first) - std::abs(cell / mMaze.height() - mMaze.end().second); }
+        double probability(int cell) { return mPheromones[cell] * std::pow(heuristics(mMaze.intToPair(cell)), 3); }
+
+        int heuristics(std::pair<int, int> cell) { return mMaze.width() + mMaze.height() - std::abs(cell.first - mMaze.end().first) + std::abs(cell.second - mMaze.end().second); }
 
     private:
         Maze mMaze;
@@ -51,8 +53,6 @@ namespace mh {
 
         std::map<int, int> mBestPath;
         int mBestPathLen;
-
-        Random<std::mt19937> mRandEngine;
     };
 
 }

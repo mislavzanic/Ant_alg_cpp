@@ -15,7 +15,7 @@ namespace mh {
 
     AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p, double startPheromones)
         : mMaze(filepath), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
-          mDecreaseFactor(p), mRandEngine(), mPheromones(new double[mMaze.width() * mMaze.height()]),
+          mDecreaseFactor(p), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
         for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) 
@@ -27,7 +27,7 @@ namespace mh {
 
     AntAlg::AntAlg(const Maze &maze, int numOfAnts, int subsetLen, double p, double startPheromones)
         : mMaze(maze), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
-          mDecreaseFactor(p), mRandEngine(), mPheromones(new double[mMaze.width() * mMaze.height()]),
+          mDecreaseFactor(p), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
         for (int i = 0; i < mMaze.width() * mMaze.height(); ++i)
@@ -110,7 +110,7 @@ namespace mh {
                 if (mPheromones[cellIndex[num]] > 0)
                     cellsToPick++;
                 
-                sum += mPheromones[cellIndex[num]];
+                sum += probability(cellIndex[num]);
             }
         }
 
@@ -118,18 +118,18 @@ namespace mh {
         std::set<int> duplicates;
         while (sum > 0 && cellsToPick > duplicates.size())
         {
-            double r = mRandEngine.getDoubleInRange(0, sum);
+            double r = mMaze.getEngine().getDoubleInRange(0, sum);
             double total = 0;
             for (int num : order)
             {
-                if (mPheromones[cellIndex[num]] != 0 && mPheromones[cellIndex[num]] + total >= r && duplicates.find(cellIndex[num]) == duplicates.end() && mMaze[cellIndex[num]])
+                if (mPheromones[cellIndex[num]] != 0 && probability(cellIndex[num]) + total >= r && duplicates.find(cellIndex[num]) == duplicates.end() && mMaze[cellIndex[num]])
                 {
                     duplicates.insert(cellIndex[num]);
                     tempS.push(cellIndex[num]);
-                    sum -= mPheromones[cellIndex[num]];
+                    sum -= probability(cellIndex[num]);
                     break;
                 }
-                total += mPheromones[cellIndex[num]];
+                total += probability(cellIndex[num]);
             }
         }
         while (!tempS.empty())
