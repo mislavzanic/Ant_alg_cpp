@@ -7,6 +7,7 @@
 
 #include "util/Random.h"
 #include "util/BFS.h"
+#include "util/StopWatch.h"
 
 #include "Maze/Maze.h"
 #include "AntAlg/AntAlg.h"

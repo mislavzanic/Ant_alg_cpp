@@ -1,7 +1,3 @@
-//
-// Created by mislav on 1/9/21.
-//
-
 #ifndef MHRAD_BFS_H
 #define MHRAD_BFS_H
 

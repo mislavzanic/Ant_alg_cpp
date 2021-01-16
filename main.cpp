@@ -8,11 +8,16 @@ int main()
     Maze m("/home/mislav/CLionProjects/mhRad/assets/m2.bmp");
     AntAlg a(m, 10, 4, 0.7f, 1.3f);
     //SimAnn s(m, 0.0f, 20.0f, 0.9f);
-    std::map<int, int> solution = a.solve(30);
+    StopWatch sw;
+    std::map<int, int> solution = a.solve(10);
+    auto timeAnt = sw.getElapsedTime();
     //std::map<int, int> solutionSim = s.solve();
     m.modifyImage(solution, {123, 64, 200}, "ant.bmp");
     //m.modifyImage(solutionSim, {123, 64, 200}, "siman.bmp");
+    sw.reset();
     solution = BFS(m);
+    auto timeBFS = sw.getElapsedTime();
     m.modifyImage(solution, {0, 0, 255}, "bfs.bmp");
+    std::cout << "Ant: " << timeAnt.count() << ", BFS: " << timeBFS.count() << std::endl;
     return 0;
 }
