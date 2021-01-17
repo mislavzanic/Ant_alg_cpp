@@ -5,7 +5,7 @@ using namespace mh;
 
 int main()
 {
-    Maze m("/home/mislav/CLionProjects/mhRad/assets/m2.bmp");
+    Maze m("/home/mislav/CLionProjects/mhRad/assets/segment1.bmp");
     AntAlg a(m, 10, 4, 0.7f, 1.3f);
     //SimAnn s(m, 0.0f, 20.0f, 0.9f);
     StopWatch sw;

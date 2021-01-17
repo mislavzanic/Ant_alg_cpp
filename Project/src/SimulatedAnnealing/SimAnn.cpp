@@ -28,22 +28,9 @@ namespace mh {
     std::map<int, int> SimAnn::solve()
     {
         std::pair<int, int> prev = mSolution;
-        std::stack<int> toVisit;
-        std::map<int, bool> visited;
-        toVisit.push(mMaze.startAsInt());
         while (mCurrentTemp > mFinalTemp)
         {
-            while (!pickRandom(mSolution, toVisit))
-            {
-                toVisit.pop();
-                if (toVisit.empty()) return mPath;
-                mSolution = mMaze.intToPair(toVisit.top());
-            }
-
-            std::pair<int, int> nextCell = mMaze.intToPair(toVisit.top());
-            toVisit.pop();
-            if (visited[mMaze.pairToInt(nextCell)]) continue;
-            visited[mMaze.pairToInt(nextCell)] = true;
+            std::pair<int, int> nextCell = mMaze.intToPair(pickRandom(mSolution));
             mPath[mMaze.pairToInt(mSolution)] = mMaze.pairToInt(nextCell);
             if (nextCell == mGoal) return mPath;
 
@@ -74,7 +61,7 @@ namespace mh {
     }
 
 
-    bool SimAnn::pickRandom(std::pair<int, int> cell, std::stack<int>& toVisit)
+    int SimAnn::pickRandom(std::pair<int, int> cell)
     {
         std::array<int, 4> order{1,2,3,4};
         std::pair<int, int> nil = {-1, -1};
@@ -91,11 +78,11 @@ namespace mh {
         {
             if (cellIndex[i] != nil && mMaze[mMaze.pairToInt(cellIndex[i])])
             {
-                toVisit.push(mMaze.pairToInt(cellIndex[i]));
-                found = true;
+                return mMaze.pairToInt(cellIndex[i]);
             }
         }
-        return found;
+
+        return -1;
     }
 }
 

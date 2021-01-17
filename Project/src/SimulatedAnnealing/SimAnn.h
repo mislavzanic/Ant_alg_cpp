@@ -24,7 +24,7 @@ namespace mh {
         int heuristics(const std::pair<int, int>& a, const std::pair<int, int>& b) const {return abs(a.first - b.first) + abs(a.second - b.second); }
 
     private:
-        bool pickRandom(std::pair<int, int> cell, std::stack<int>& toVisit);
+        int pickRandom(std::pair<int, int> cell);
 
     private:
         Maze mMaze;
