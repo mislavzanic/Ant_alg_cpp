@@ -1,7 +1,3 @@
-//
-// Created by mislav on 12/12/20.
-//
-
 #include "AntAlg.h"
 #include <stack>
 #include <array>
@@ -45,9 +41,9 @@ namespace mh {
             std::vector<std::set<int>> paths;
             for (int i = 0; i < mNumOfAnts; ++i)
             {
-                std::map<int, int> newPath;
-                createSolution(newPath);
-                getPath(newPath, paths);
+                std::map<int, int> parentMap;
+                createSolution(parentMap);
+                getPath(parentMap, paths);
             }
             getSubset(paths);
             updatePheromone(paths);
@@ -57,7 +53,7 @@ namespace mh {
         return mBestPath;
     }
 
-    void AntAlg::createSolution(std::map<int, int>& path)
+    void AntAlg::createSolution(std::map<int, int>& parentMap)
     {
         int start = mMaze.startAsInt();
         int end = mMaze.endAsInt();
@@ -71,10 +67,9 @@ namespace mh {
             toVisit.pop();
             if (visited[curr]) continue;
             visited[curr] = true;
-            path[curr] = prev;
             if (curr == end) 
                 break;
-            pickRandom(curr, toVisit);
+            pickRandom(curr, toVisit, parentMap);
             prev = curr;
         }
     }
@@ -90,8 +85,7 @@ namespace mh {
         }
     }
 
-    // refactor sutra!!
-    void AntAlg::pickRandom(int cell, std::stack<int>& toVisit)
+    void AntAlg::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap)
     {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
@@ -108,7 +102,11 @@ namespace mh {
             if (cellIndex[num] != -1 && mMaze[cellIndex[num]])
             {
                 if (mPheromones[cellIndex[num]] > 0)
+                {
+                    if (parentMap[cellIndex[num]] == 0)
+                        parentMap[cellIndex[num]] = cell;
                     cellsToPick++;
+                }
                 
                 sum += probability(cellIndex[num]);
             }
@@ -140,24 +138,27 @@ namespace mh {
         }
     }
 
-    void AntAlg::getPath(std::map<int, int> &newPath, std::vector<std::set<int>> &paths)
+    void AntAlg::getPath(std::map<int, int> &parentMap, std::vector<std::set<int>> &paths)
     {
         int start = mMaze.startAsInt(), end = mMaze.endAsInt(), len = 0;
         std::set<int> path;
+        std::map<int, int> solution;
         while (end != start)
         {
             assert(end != 0);
             len++;
             path.insert(end);
-            end = newPath[end];
+            solution[end] = parentMap[end];
+            end = parentMap[end];
         }
+        solution[start] = start;
         path.insert(start);
         for (int c:path) mAllPheromones[c] += (double)1/len;
         paths.push_back(path);
         if (len < mBestPathLen || mBestPathLen == -1)
         {
             mBestPathLen = len;
-            mBestPath = newPath;
+            mBestPath = solution;
         }
     }
 
