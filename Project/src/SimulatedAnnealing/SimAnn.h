@@ -10,41 +10,50 @@
 
 namespace mh {
 
-    class SimAnn
+    class SimulatedAnnealing
     {
     public:
-        SimAnn(const std::string& filepath, double minTemp, double maxTemp, double step);
-        SimAnn(const Maze& m, double minTemp, double maxTemp, double step);
-        SimAnn(Maze&& m, double minTemp, double maxTemp, double step);
-        std::map<int, int> solve();
+        SimulatedAnnealing(const std::string& filepath, int maxIter);
+        SimulatedAnnealing(const Maze& m, int maxIter);
+        SimulatedAnnealing(Maze&& m, int maxIter);
+        Maze::MazePath<int> solve();
+
+    private:
+        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
+        void pickRandom(int cell, std::queue<int>& toVisit, std::map<int, int>& parentMap);
+        void createInitialSolution();
+        void simAnn();
+
+        static double temperature(double t) { return std::exp(-t); }
 
         int heuristics(const std::pair<int, int>& cell) const 
         { 
-            return mMaze.width() + mMaze.height() - std::abs(cell.first - mMaze.end().first) + std::abs(cell.second - mMaze.end().second); 
+            return mMaze.width() + mMaze.height() - std::abs(cell.first - mMaze.end().first) + std::abs(cell.second - mMaze.end().second);
         }
-
+        
         int heuristics(int num) const 
         {
             std::pair<int, int> a = mMaze.intToPair(num);
             return heuristics(a);
         }
 
-    private:
-        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
-        void createInitialSolution();
-        void simulatedAnnealing();
+        int heuristics(const Maze::MazePath<int>& state) const
+        {
+            return mMaze.width() * mMaze.height() - state.length;
+        }
+
+        Maze::MazePath<int> getNeighbor(Maze::MazePath<int>& state);
+        bool findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath);
 
     private:
         Maze mMaze;
 
-        double mCurrentTemp;
-        double mFinalTemp;
+        int mMaxIter;
         double mStep;
 
-        std::map<int, int> mSolution;
+        Maze::MazePath<int> mSolution;
         std::pair<int, int> mGoal;
     };
 }
-
 
 #endif //MHRAD_SIMANN_H

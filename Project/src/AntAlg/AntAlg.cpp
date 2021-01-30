@@ -9,20 +9,20 @@
 
 namespace mh {
 
-    AntAlg::AntAlg(const std::string &filepath, int numOfAnts, int subsetLen, double p, double startPheromones)
-        : mMaze(filepath), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
+    AntColony::AntColony(const std::string &filepath, int numOfAnts, int subsetLen, double p, double startPheromones)
+        : mMaze(filepath), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen),
           mDecreaseFactor(p), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
-        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i) 
+        for (int i = 0; i < mMaze.width() * mMaze.height(); ++i)
         {
             mAllPheromones[i] = 0;
             mPheromones[i] = startPheromones;
         }
     }
 
-    AntAlg::AntAlg(const Maze &maze, int numOfAnts, int subsetLen, double p, double startPheromones)
-        : mMaze(maze), mNumOfAnts(numOfAnts), mBestPathLen(-1), mSubsetLen(subsetLen),
+    AntColony::AntColony(const Maze &maze, int numOfAnts, int subsetLen, double p, double startPheromones)
+        : mMaze(maze), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen),
           mDecreaseFactor(p), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
@@ -33,7 +33,7 @@ namespace mh {
         }
     }
 
-    std::map<int, int> AntAlg::solve(int numOfIterations)
+    Maze::MazePath<int> AntColony::solve(int numOfIterations)
     {
         int j = numOfIterations;
         while (j)
@@ -46,14 +46,14 @@ namespace mh {
                 getPath(parentMap, paths);
             }
             getSubset(paths);
-            updatePheromone(paths);
+            updatePheromones(paths);
             j--;
         }
 
         return mBestPath;
     }
 
-    void AntAlg::createSolution(std::map<int, int>& parentMap)
+    void AntColony::createSolution(std::map<int, int>& path)
     {
         int start = mMaze.startAsInt();
         int end = mMaze.endAsInt();
@@ -69,12 +69,12 @@ namespace mh {
             visited[curr] = true;
             if (curr == end) 
                 break;
-            pickRandom(curr, toVisit, parentMap);
+            pickRandom(curr, toVisit, path);
             prev = curr;
         }
     }
 
-    void AntAlg::updatePheromone(const std::vector<std::set<int>>& bestPaths)
+    void AntColony::updatePheromones(const std::vector<std::set<int>>& bestPaths)
     {
         for (int i = 0; i < mSubsetLen; ++i)
             increasePheromones(bestPaths[i]);
@@ -85,7 +85,7 @@ namespace mh {
         }
     }
 
-    void AntAlg::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap)
+    void AntColony::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap)
     {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
@@ -138,41 +138,40 @@ namespace mh {
         }
     }
 
-    void AntAlg::getPath(std::map<int, int> &parentMap, std::vector<std::set<int>> &paths)
+    void AntColony::getPath(std::map<int, int> &newPath, std::vector<std::set<int>> &paths)
     {
-        int start = mMaze.startAsInt(), end = mMaze.endAsInt(), len = 0;
+        int start = mMaze.startAsInt(), end = mMaze.endAsInt();
+        Maze::MazePath<int> solution;
         std::set<int> path;
-        std::map<int, int> solution;
         while (end != start)
         {
             assert(end != 0);
-            len++;
+            solution.length++;
             path.insert(end);
-            solution[end] = parentMap[end];
-            end = parentMap[end];
+            solution.parentMap[end] = newPath[end];
+            end = newPath[end];
         }
-        solution[start] = start;
+        solution.parentMap[start] = start;
         path.insert(start);
-        for (int c:path) mAllPheromones[c] += (double)1/len;
+        for (int c:path) mAllPheromones[c] += (double)1 / solution.length;
         paths.push_back(path);
-        if (len < mBestPathLen || mBestPathLen == -1)
+        if (solution.length < mBestPath.length || mBestPath.parentMap.empty())
         {
-            mBestPathLen = len;
             mBestPath = solution;
         }
     }
 
-    void AntAlg::increasePheromones(const std::set<int>& path)
+    void AntColony::increasePheromones(const std::set<int>& path)
     {
         for (auto cell : path) this->mPheromones[cell] += this->mAllPheromones[cell];
     }
 
-    void AntAlg::decreasePheromones(int Ant)
+    void AntColony::decreasePheromones(int Ant)
     {
         mPheromones[Ant] *= (1 - mDecreaseFactor);
     }
 
-    void AntAlg::getSubset(std::vector<std::set<int>> &paths) const
+    void AntColony::getSubset(std::vector<std::set<int>> &paths) const
     {
         std::sort(paths.begin(), paths.end(), [](auto& a, auto& b){ return a.size() < b.size(); });
     }

@@ -9,7 +9,7 @@
 
 namespace mh {
 
-    void pickRandom(int cell, std::queue<int>& toVisit, const Maze& m, Random<std::mt19937>& engine, std::map<int, int>& path)
+    void pick_random(int cell, std::queue<int>& toVisit, const Maze& m, Random<std::mt19937>& engine, std::map<int, int>& path)
     {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
@@ -30,7 +30,7 @@ namespace mh {
         }
     }
 
-    std::map<int, int> BFS(const mh::Maze &m)
+    Maze::MazePath<int> BFS(const mh::Maze &m)
     {
         Random<std::mt19937> engine;
         int start = m.startAsInt(), end = m.endAsInt();
@@ -45,15 +45,16 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             if (curr == end) break;
-            pickRandom(curr, Q, m, engine, path);
+            pick_random(curr, Q, m, engine, path);
         }
-        std::map<int, int> retPath;
+        Maze::MazePath<int> retPath;
         while (end != start)
         {
-            retPath[end] = path[end];
+            retPath.parentMap[end] = path[end];
+            retPath.length++;
             end = path[end];
         }
-        retPath[start] = start;
+        retPath.parentMap[start] = start;
         return retPath;
     }
 }

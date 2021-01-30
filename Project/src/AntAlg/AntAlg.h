@@ -1,7 +1,3 @@
-//
-// Created by mislav on 12/12/20.
-//
-
 #ifndef MHRAD_ANTALG_H
 #define MHRAD_ANTALG_H
 
@@ -18,22 +14,21 @@
 
 namespace mh {
 
-    class AntAlg
+    class AntColony
     {
     public:
-        AntAlg(const std::string& filepath, int numOfAnts, int subsetLen, double p, double startPheromones);
-        AntAlg(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones);
-        std::map<int, int> solve(int numOfIterations);
+        AntColony(const std::string& filepath, int numOfAnts, int subsetLen, double p, double startPheromones);
+        AntColony(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones);
+        Maze::MazePath<int> solve(int numOfIterations);
 
     private:
         void createSolution(std::map<int, int>& path);
-        void initialSolution();
 
         void getPath(std::map<int, int>& newPath, std::vector<std::set<int>>& paths);
         void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
         void getSubset(std::vector<std::set<int>>& paths) const;
 
-        void updatePheromone(const std::vector<std::set<int>>& bestPaths);
+        void updatePheromones(const std::vector<std::set<int>>& bestPaths);
         void increasePheromones(const std::set<int>& path);
         void decreasePheromones(int Ant);
 
@@ -51,8 +46,7 @@ namespace mh {
         double *mAllPheromones;
         double mDecreaseFactor;
 
-        std::map<int, int> mBestPath;
-        int mBestPathLen;
+        Maze::MazePath<int> mBestPath;
     };
 
 }

@@ -64,7 +64,7 @@ namespace mh {
         }
     }
 
-    void Maze::modifyImage(std::map<int, int> &path, std::tuple<uint8_t, uint8_t, uint8_t> color, const std::string& filename)
+    void Maze::modifyImage(std::map<int, int> &path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename)
     {
         size_t imgSize = mWidth * mHeight * mChannels;
         stbi_uc* newImg = new stbi_uc[imgSize];
@@ -89,5 +89,17 @@ namespace mh {
 
         stbi_write_bmp(filename.c_str(), mWidth, mHeight, mChannels, newImg);
         delete[] newImg;
+    }
+
+    int Maze::neighbors(int cell) const
+    {
+        int num = 0;
+        std::pair<int, int> cellAsPair = intToPair(cell);
+        if (cellAsPair.first > 0 && mMaze[cell - 1]) num += 1;
+        if (cellAsPair.first < mWidth - 1 && mMaze[cell + 1]) num += 1;
+        if (cellAsPair.second > 0 && mMaze[cell - mWidth]) num += 1;
+        if (cellAsPair.second < mHeight - 1 && mMaze[cell + mWidth]) num += 1;
+
+        return num;
     }
 }

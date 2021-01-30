@@ -5,19 +5,23 @@ using namespace mh;
 
 int main()
 {
-    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/segment1.bmp");
-    //AntAlg a(m, 10, 4, 0.7f, 1.3f);
-    SimAnn s(m, 0.0f, 20.0f, 0.9f);
+    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/braid3.bmp");
+    AntColony a(m, 20, 7, 0.7f, 1.0f);
+    SimulatedAnnealing s(m, 80);
     StopWatch sw;
-    //std::map<int, int> solution = a.solve(10);
+    Maze::MazePath<int> solution = a.solve(15);
     auto timeAnt = sw.getElapsedTime();
-    std::map<int, int> solutionSim = s.solve();
-    //m.modifyImage(solution, {123, 64, 200}, "ant.bmp");
-    m.modifyImage(solutionSim, {123, 64, 200}, "siman.bmp");
     sw.reset();
-    std::map<int, int> BFSsolution = BFS(m);
+    Maze::MazePath<int> solutionSim = s.solve();
+    auto time_sim = sw.getElapsedTime();
+    m.modifyImage(solution.parentMap, {183, 64, 20}, "ant.bmp");
+    m.modifyImage(solutionSim.parentMap, {23, 164, 20}, "siman.bmp");
+    sw.reset();
+    Maze::MazePath<int> BFSsolution = BFS(m);
     auto timeBFS = sw.getElapsedTime();
-    m.modifyImage(BFSsolution, {0, 0, 255}, "bfs.bmp");
-    //std::cout << "Ant: " << timeAnt.count() << ", BFS: " << timeBFS.count() << std::endl;
+    m.modifyImage(BFSsolution.parentMap, {48, 34, 213}, "bfs.bmp");
+    std::cout << "Ant time: " << timeAnt.count() << ", ant len:" << solution.length << std::endl;
+    std::cout << "Sim time: " << time_sim.count() << ", sim len:" << solutionSim.length << std::endl; 
+    std::cout << "BFS time: " << timeBFS.count() << ", bfs len:" << BFSsolution.length << std::endl;
     return 0;
 }

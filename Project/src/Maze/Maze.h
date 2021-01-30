@@ -7,6 +7,7 @@
 
 #include <string>
 #include <map>
+#include <set>
 #include <stb_image.h>
 #include "util/Random.h"
 
@@ -14,6 +15,15 @@ namespace mh {
 
     class Maze
     {
+    public:
+        template <typename T> 
+        struct MazePath
+        {
+            std::map<T, T> parentMap;
+            std::set<T> intersections;
+            size_t length = 0;
+        };
+        
     public:
         Maze(const std::string& filepath);
         Maze(const Maze &maze);
@@ -31,12 +41,14 @@ namespace mh {
         int width() const { return mWidth; }
         int height() const { return mHeight; }
 
+        int neighbors(int cell) const;
+
         int pairToInt(const std::pair<int, int> coord) const { return coord.first + coord.second * mWidth; }
         std::pair<int, int> intToPair(int coord) const { return std::make_pair<int, int>(coord % mWidth, coord / mWidth); }
 
         Random<std::mt19937>& getEngine() { return mRandEngine; };
 
-        void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t> color, const std::string& filename);
+        void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
 
     private:
         void loadImageFromFile(const std::string& filepath);
