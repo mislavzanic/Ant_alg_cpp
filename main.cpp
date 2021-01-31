@@ -5,9 +5,9 @@ using namespace mh;
 
 int main()
 {
-    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/braid3.bmp");
+    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/m2.bmp");
     AntColony a(m, 20, 7, 0.7f, 1.0f);
-    SimulatedAnnealing s(m, 80);
+    SimulatedAnnealing s(m, 60);
     StopWatch sw;
     Maze::MazePath<int> solution = a.solve(15);
     auto timeAnt = sw.getElapsedTime();

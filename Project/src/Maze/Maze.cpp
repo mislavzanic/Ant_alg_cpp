@@ -102,4 +102,32 @@ namespace mh {
 
         return num;
     }
+
+    int Maze::insertNeighbors(int cell, std::set<int> &neighborSet) const
+    {
+        int num = 0;
+        std::pair<int, int> cellAsPair = intToPair(cell);
+        if (cellAsPair.first > 0 && mMaze[cell - 1])
+        {
+            neighborSet.insert(cell - 1);
+            num++;
+        }
+        if (cellAsPair.first < mWidth - 1 && mMaze[cell + 1])
+        {
+            neighborSet.insert(cell + 1);
+            num++;
+        }
+        if (cellAsPair.second > 0 && mMaze[cell - mWidth])
+        {
+            neighborSet.insert(cell - mWidth);
+            num++;
+        }
+        if (cellAsPair.second < mHeight - 1 && mMaze[cell + mWidth])
+        {
+            neighborSet.insert(cell + mWidth);
+            num++;
+        }
+
+        return num;
+    }
 }

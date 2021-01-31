@@ -10,7 +10,7 @@ namespace mh {
     {
     public:
         using clock_t = std::chrono::high_resolution_clock;
-        using duration_t = clock_t::duration;
+        using duration_t = std::chrono::duration<float>;
 
         StopWatch() 
             : mStartTime{clock_t::now()} {}

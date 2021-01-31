@@ -8,6 +8,7 @@
 #include <string>
 #include <map>
 #include <set>
+#include <list>
 #include <stb_image.h>
 #include "util/Random.h"
 
@@ -20,7 +21,7 @@ namespace mh {
         struct MazePath
         {
             std::map<T, T> parentMap;
-            std::set<T> intersections;
+            std::vector<T> intersections;
             size_t length = 0;
         };
         
@@ -42,6 +43,7 @@ namespace mh {
         int height() const { return mHeight; }
 
         int neighbors(int cell) const;
+        int insertNeighbors(int cell, std::set<int>& neighborSet) const;
 
         int pairToInt(const std::pair<int, int> coord) const { return coord.first + coord.second * mWidth; }
         std::pair<int, int> intToPair(int coord) const { return std::make_pair<int, int>(coord % mWidth, coord / mWidth); }

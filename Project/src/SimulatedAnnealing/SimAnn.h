@@ -20,7 +20,6 @@ namespace mh {
 
     private:
         void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
-        void pickRandom(int cell, std::queue<int>& toVisit, std::map<int, int>& parentMap);
         void createInitialSolution();
         void simAnn();
 
@@ -49,7 +48,6 @@ namespace mh {
         Maze mMaze;
 
         int mMaxIter;
-        double mStep;
 
         Maze::MazePath<int> mSolution;
         std::pair<int, int> mGoal;

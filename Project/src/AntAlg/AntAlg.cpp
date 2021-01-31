@@ -85,58 +85,96 @@ namespace mh {
         }
     }
 
-    void AntColony::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap)
+    void AntColony::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int> &parentMap)
     {
-        std::array<int, 4> order{1,2,3,4};
-        std::map<int, int> cellIndex
-        {
-            {1, cell < mMaze.width() ? -1 : cell - mMaze.width()},
-            {2, cell + mMaze.width() > mMaze.width() * mMaze.height() ? -1 : cell + mMaze.width()},
-            {3, cell % mMaze.width() ? cell - 1 : -1},
-            {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
-        };
+        std::set<int> neighborCells;
+        int num = mMaze.insertNeighbors(cell, neighborCells);
         double sum = 0;
-        int cellsToPick = 0;
-        for (int num : order)
+        for (int neighbor : neighborCells)
         {
-            if (cellIndex[num] != -1 && mMaze[cellIndex[num]])
+            if (mPheromones[neighbor] > 0)
             {
-                if (mPheromones[cellIndex[num]] > 0)
-                {
-                    if (parentMap[cellIndex[num]] == 0)
-                        parentMap[cellIndex[num]] = cell;
-                    cellsToPick++;
-                }
-                
-                sum += probability(cellIndex[num]);
+                if (parentMap[neighbor] == 0)
+                    parentMap[neighbor] = cell;
             }
+            sum += probability(neighbor);
         }
 
-        std::stack<int> tempS;
-        std::set<int> duplicates;
-        while (sum > 0 && cellsToPick > duplicates.size())
+        std::list<int> tempList;
+        while (sum > 0 && num > 0)
         {
             double r = mMaze.getEngine().getDoubleInRange(0, sum);
             double total = 0;
-            for (int num : order)
+            int pickedCell;
+            for (int neighbor : neighborCells)
             {
-                if (mPheromones[cellIndex[num]] != 0 && probability(cellIndex[num]) + total >= r && duplicates.find(cellIndex[num]) == duplicates.end() && mMaze[cellIndex[num]])
+                if (probability(neighbor) + total >= r)
                 {
-                    duplicates.insert(cellIndex[num]);
-                    tempS.push(cellIndex[num]);
-                    sum -= probability(cellIndex[num]);
+                    sum -= probability(neighbor);
+                    num--;
+                    pickedCell = neighbor;
+                    tempList.push_front(pickedCell);
                     break;
                 }
-                total += probability(cellIndex[num]);
+                total += probability(neighbor);
             }
+            neighborCells.erase(pickedCell);
         }
-        while (!tempS.empty())
-        {
-            int temp = tempS.top();
-            tempS.pop();
-            toVisit.push(temp);
-        }
+        for (int neighbor : tempList) toVisit.push(neighbor);
     }
+
+    //void AntColony::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap)
+    //{
+    //    std::array<int, 4> order{1,2,3,4};
+    //    std::map<int, int> cellIndex
+    //    {
+    //        {1, cell < mMaze.width() ? -1 : cell - mMaze.width()},
+    //        {2, cell + mMaze.width() > mMaze.width() * mMaze.height() ? -1 : cell + mMaze.width()},
+    //        {3, cell % mMaze.width() ? cell - 1 : -1},
+    //        {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
+    //    };
+    //    double sum = 0;
+    //    int cellsToPick = 0;
+    //    for (int num : order)
+    //    {
+    //        if (cellIndex[num] != -1 && mMaze[cellIndex[num]])
+    //        {
+    //            if (mPheromones[cellIndex[num]] > 0)
+    //            {
+    //                if (parentMap[cellIndex[num]] == 0)
+    //                    parentMap[cellIndex[num]] = cell;
+    //                cellsToPick++;
+    //            }
+    //
+    //            sum += probability(cellIndex[num]);
+    //        }
+    //    }
+
+    //    std::stack<int> tempS;
+    //    std::set<int> duplicates;
+    //    while (sum > 0 && cellsToPick > duplicates.size())
+    //    {
+    //        double r = mMaze.getEngine().getDoubleInRange(0, sum);
+    //        double total = 0;
+    //        for (int num : order)
+    //        {
+    //            if (mPheromones[cellIndex[num]] != 0 && probability(cellIndex[num]) + total >= r && duplicates.find(cellIndex[num]) == duplicates.end() && mMaze[cellIndex[num]])
+    //            {
+    //                duplicates.insert(cellIndex[num]);
+    //                tempS.push(cellIndex[num]);
+    //                sum -= probability(cellIndex[num]);
+    //                break;
+    //            }
+    //            total += probability(cellIndex[num]);
+    //        }
+    //    }
+    //    while (!tempS.empty())
+    //    {
+    //        int temp = tempS.top();
+    //        tempS.pop();
+    //        toVisit.push(temp);
+    //    }
+    //}
 
     void AntColony::getPath(std::map<int, int> &newPath, std::vector<std::set<int>> &paths)
     {

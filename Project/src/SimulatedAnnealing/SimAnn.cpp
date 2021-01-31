@@ -1,7 +1,6 @@
 #include <queue>
 #include <iostream>
 #include <algorithm>
-#include <cmath>
 #include <set>
 #include "SimAnn.h"
 
@@ -53,7 +52,7 @@ namespace mh {
         while (curr != start)
         {
             mSolution.parentMap[curr] = parentMap[curr];
-            if (mMaze.neighbors(curr) > 2) mSolution.intersections.insert(curr);
+            if (mMaze.neighbors(curr) > 2) mSolution.intersections.push_back(curr);
             mSolution.length++;
             curr = parentMap[curr];
         }
@@ -77,124 +76,52 @@ namespace mh {
             {
                 double random = mMaze.getEngine().getDoubleInRange(0, 1);
                 double T = temperature((double)costDiff / (double)(mMaxIter - k));
-                if (random < T)
-                    currentState = neighbor;
+                if (random < T) currentState = neighbor;
             }
         }
     }
 
-    void SimulatedAnnealing::pickRandom(int cell, std::queue<int>& toVisit, std::map<int, int>& parentMap)
+    void SimulatedAnnealing::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int> &parentMap)
     {
-        std::array<int, 4> order{1,2,3,4};
-        std::map<int, int> cellIndex
-        {
-            {1, cell < mMaze.width() ? -1 : cell - mMaze.width()},
-            {2, cell + mMaze.width() > mMaze.width() * mMaze.height() ? -1 : cell + mMaze.width()},
-            {3, cell % mMaze.width() ? cell - 1 : -1},
-            {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
-        };
+        std::set<int> neighborCells;
+        int num = mMaze.insertNeighbors(cell, neighborCells);
         double sum = 0;
-        int cellsToPick = 0;
-        for (int num : order)
+        for (int neighbor : neighborCells)
         {
-            if (cellIndex[num] != -1 && mMaze[cellIndex[num]])
-            {
-                if (mMaze[cellIndex[num]])
-                {
-                    if (parentMap[cellIndex[num]] == 0)
-                        parentMap[cellIndex[num]] = cell;
-                    cellsToPick++;
-                }
-                
-                sum += heuristics(cellIndex[num]);
-            }
+            if (parentMap[neighbor] == 0) parentMap[neighbor] = cell;
+            sum += heuristics(neighbor);
         }
-        std::stack<int> tempS;
-        std::set<int> duplicates;
-        while (sum > 0 && cellsToPick > duplicates.size())
-        {
-            double r = mMaze.getEngine().getDoubleInRange(0, sum);
-            double total = 0;
-            for (int num : order)
-            {
-                if (heuristics(cellIndex[num]) + total >= r && duplicates.find(cellIndex[num]) == duplicates.end() && mMaze[cellIndex[num]])
-                {
-                    duplicates.insert(cellIndex[num]);
-                    tempS.push(cellIndex[num]);
-                    sum -= heuristics(cellIndex[num]);
-                    break;
-                }
-                total += heuristics(cellIndex[num]);
-            }
-        }
-        while (!tempS.empty())
-        {
-            int temp = tempS.top();
-            tempS.pop();
-            toVisit.push(temp);
-        }
-    }
 
-    void SimulatedAnnealing::pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap)
-    {
-        std::array<int, 4> order{1,2,3,4};
-        std::map<int, int> cellIndex
-        {
-            {1, cell < mMaze.width() ? -1 : cell - mMaze.width()},
-            {2, cell + mMaze.width() > mMaze.width() * mMaze.height() ? -1 : cell + mMaze.width()},
-            {3, cell % mMaze.width() ? cell - 1 : -1},
-            {4, (cell + 1) % mMaze.width() ? cell + 1 : -1}
-        };
-        double sum = 0;
-        int cellsToPick = 0;
-        for (int num : order)
-        {
-            if (cellIndex[num] != -1 && mMaze[cellIndex[num]])
-            {
-                if (mMaze[cellIndex[num]])
-                {
-                    if (parentMap[cellIndex[num]] == 0)
-                        parentMap[cellIndex[num]] = cell;
-                    cellsToPick++;
-                }
-                
-                sum += heuristics(cellIndex[num]);
-            }
-        }
-        std::stack<int> tempS;
-        std::set<int> duplicates;
-        while (sum > 0 && cellsToPick > duplicates.size())
+        std::list<int> tempList;
+        while (sum > 0 && num > 0)
         {
             double r = mMaze.getEngine().getDoubleInRange(0, sum);
             double total = 0;
-            for (int num : order)
+            int pickedCell;
+            for (int neighbor : neighborCells)
             {
-                if (heuristics(cellIndex[num]) + total >= r && duplicates.find(cellIndex[num]) == duplicates.end() && mMaze[cellIndex[num]])
+                if (heuristics(neighbor) + total >= r)
                 {
-                    duplicates.insert(cellIndex[num]);
-                    tempS.push(cellIndex[num]);
-                    sum -= heuristics(cellIndex[num]);
+                    sum -= heuristics(neighbor);
+                    num--;
+                    pickedCell = neighbor;
+                    tempList.push_front(pickedCell);
                     break;
                 }
-                total += heuristics(cellIndex[num]);
+                total += heuristics(neighbor);
             }
+            neighborCells.erase(pickedCell);
         }
-        while (!tempS.empty())
-        {
-            int temp = tempS.top();
-            tempS.pop();
-            toVisit.push(temp);
-        }
+        for (int neighbor : tempList) toVisit.push(neighbor);
     }
 
     Maze::MazePath<int> SimulatedAnnealing::getNeighbor(Maze::MazePath<int>& state)
     {
         Maze::MazePath<int> returnPath;
-        for (int intersection : state.intersections)
-        {
+        std::shuffle(state.intersections.begin(), state.intersections.end(), mMaze.getEngine().getEngine());
+        for (int intersection: state.intersections)
             if (findPath(intersection, returnPath, state))
                 return returnPath;
-        }
         return returnPath;
     }
 
@@ -228,11 +155,11 @@ namespace mh {
             pickRandom(curr, toVisit, parentMap);
         }
         if (curr != end) return false;
-        
+
         while (curr != start)
         {
             newPath.parentMap[curr] = parentMap[curr];
-            if (mMaze.neighbors(curr) > 2) newPath.intersections.insert(curr);
+            if (mMaze.neighbors(curr) > 2) newPath.intersections.push_back(curr);
             newPath.length++;
             curr = parentMap[curr];
         }
