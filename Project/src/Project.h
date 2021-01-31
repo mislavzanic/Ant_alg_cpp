@@ -6,7 +6,7 @@
 #define MHRAD_PROJECT_H
 
 #include "util/Random.h"
-#include "util/BFS.h"
+#include "util/PathfindingAlg.h"
 #include "util/StopWatch.h"
 
 #include "Maze/Maze.h"

@@ -5,7 +5,7 @@ using namespace mh;
 
 int main()
 {
-    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/m2.bmp");
+    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/braid2.bmp");
     AntColony a(m, 20, 7, 0.7f, 1.0f);
     SimulatedAnnealing s(m, 60);
     StopWatch sw;
@@ -19,9 +19,14 @@ int main()
     sw.reset();
     Maze::MazePath<int> BFSsolution = BFS(m);
     auto timeBFS = sw.getElapsedTime();
+    sw.reset();
+    Maze::MazePath<int> DFSsolution = DFS(m);
+    auto timeDFS = sw.getElapsedTime();
     m.modifyImage(BFSsolution.parentMap, {48, 34, 213}, "bfs.bmp");
+    m.modifyImage(DFSsolution.parentMap, {200, 34, 213}, "dfs.bmp");
     std::cout << "Ant time: " << timeAnt.count() << ", ant len:" << solution.length << std::endl;
     std::cout << "Sim time: " << time_sim.count() << ", sim len:" << solutionSim.length << std::endl; 
     std::cout << "BFS time: " << timeBFS.count() << ", bfs len:" << BFSsolution.length << std::endl;
+    std::cout << "DFS time: " << timeDFS.count() << ", bfs len:" << DFSsolution.length << std::endl;
     return 0;
 }
