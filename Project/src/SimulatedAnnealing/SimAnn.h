@@ -16,30 +16,21 @@ namespace mh {
         SimulatedAnnealing(const std::string& filepath, int maxIter);
         SimulatedAnnealing(const Maze& m, int maxIter);
         SimulatedAnnealing(Maze&& m, int maxIter);
-        Maze::MazePath<int> solve();
+        Maze::MazePath<int> shortestPath();
+        Maze::MazePath<int> longestPath();
 
     private:
-        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
-        void createInitialSolution();
-        void simAnn();
+
+        template<typename Heuristics>
+        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap, Heuristics h);
+
+        template<typename Heuristics>
+        void createInitialSolution(Heuristics h);
+
+        template<typename Heuristics>
+        void simAnn(Heuristics h);
 
         static double temperature(double t) { return std::exp(-t); }
-
-        int heuristics(const std::pair<int, int>& cell) const 
-        { 
-            return mMaze.width() + mMaze.height() - std::abs(cell.first - mMaze.end().first) + std::abs(cell.second - mMaze.end().second);
-        }
-        
-        int heuristics(int num) const 
-        {
-            std::pair<int, int> a = mMaze.intToPair(num);
-            return heuristics(a);
-        }
-
-        int heuristics(const Maze::MazePath<int>& state) const
-        {
-            return mMaze.width() * mMaze.height() - state.length;
-        }
 
         Maze::MazePath<int> getNeighbor(Maze::MazePath<int>& state);
         bool findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath);

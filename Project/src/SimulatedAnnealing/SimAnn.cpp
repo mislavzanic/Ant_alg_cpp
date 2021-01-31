@@ -23,14 +23,38 @@ namespace mh {
     {
     }
     
-    Maze::MazePath<int> SimulatedAnnealing::solve()
+    Maze::MazePath<int> SimulatedAnnealing::shortestPath()
     {
-        createInitialSolution();
-        simAnn();
+        createInitialSolution([this](int cell)
+        {
+            return mMaze.width() + mMaze.height()
+                   - std::abs((cell % mMaze.width()) - mMaze.end().first)
+                   + std::abs((cell / mMaze.width()) - mMaze.end().second);
+        });
+
+        simAnn([this](const Maze::MazePath<int>& state)
+        {
+            return mMaze.width() * mMaze.height() - state.length;
+        });
         return mSolution;
     }
 
-    void SimulatedAnnealing::createInitialSolution()
+    Maze::MazePath<int> SimulatedAnnealing::longestPath()
+    {
+        createInitialSolution([this](int cell)
+        {
+            return 1;
+        });
+
+        simAnn([this](const Maze::MazePath<int>& state)
+        {
+            return state.length;
+        });
+        return mSolution;
+    }
+
+    template <typename Heuristic>
+    void SimulatedAnnealing::createInitialSolution(Heuristic h)
     {
         int start = mMaze.startAsInt();
         int end = mMaze.endAsInt();
@@ -46,7 +70,7 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             if (curr == end) break;
-            pickRandom(curr, toVisit, parentMap);
+            pickRandom(curr, toVisit, parentMap, h);
         }
 
         while (curr != start)
@@ -59,17 +83,18 @@ namespace mh {
         mSolution.parentMap[start] = start;
     }
 
-    void SimulatedAnnealing::simAnn()
+    template <typename Heuristics>
+    void SimulatedAnnealing::simAnn(Heuristics h)
     {
         Maze::MazePath<int> currentState = mSolution;
         for (int k = 0; k < mMaxIter; ++k)
         {
             Maze::MazePath<int> neighbor = getNeighbor(currentState);
-            int costDiff = heuristics(neighbor) - heuristics(currentState);
+            int costDiff = h(neighbor) - h(currentState);
             if (costDiff > 0)
             {
                 currentState = neighbor;
-                if (heuristics(currentState) > heuristics(mSolution))
+                if (h(currentState) > h(mSolution))
                     mSolution = currentState;
             }
             else
@@ -81,7 +106,8 @@ namespace mh {
         }
     }
 
-    void SimulatedAnnealing::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int> &parentMap)
+    template <typename Heuristics>
+    void SimulatedAnnealing::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int> &parentMap, Heuristics h)
     {
         std::set<int> neighborCells;
         int num = mMaze.insertNeighbors(cell, neighborCells);
@@ -89,7 +115,7 @@ namespace mh {
         for (int neighbor : neighborCells)
         {
             if (parentMap[neighbor] == 0) parentMap[neighbor] = cell;
-            sum += heuristics(neighbor);
+            sum += h(neighbor);
         }
 
         std::list<int> tempList;
@@ -100,15 +126,15 @@ namespace mh {
             int pickedCell;
             for (int neighbor : neighborCells)
             {
-                if (heuristics(neighbor) + total >= r)
+                if (h(neighbor) + total >= r)
                 {
-                    sum -= heuristics(neighbor);
+                    sum -= h(neighbor);
                     num--;
                     pickedCell = neighbor;
                     tempList.push_front(pickedCell);
                     break;
                 }
-                total += heuristics(neighbor);
+                total += h(neighbor);
             }
             neighborCells.erase(pickedCell);
         }
@@ -119,13 +145,15 @@ namespace mh {
     {
         Maze::MazePath<int> returnPath;
         std::shuffle(state.intersections.begin(), state.intersections.end(), mMaze.getEngine().getEngine());
+        int i = state.intersections.size() / 2;
+        if (findPath(state.intersections[i], returnPath, state))
+            return returnPath;
         for (int intersection: state.intersections)
             if (findPath(intersection, returnPath, state))
                 return returnPath;
         return returnPath;
     }
 
-    // TODO: refactor this!!
     bool SimulatedAnnealing::findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath)
     {
         int end = mMaze.endAsInt();
@@ -152,7 +180,12 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             if (curr == end) break;
-            pickRandom(curr, toVisit, parentMap);
+            pickRandom(curr, toVisit, parentMap, [this](int cell)
+            {
+                return mMaze.width() + mMaze.height()
+                       - std::abs((cell % mMaze.width()) - mMaze.end().first)
+                       + std::abs((cell / mMaze.width()) - mMaze.end().second);
+            });
         }
         if (curr != end) return false;
 
