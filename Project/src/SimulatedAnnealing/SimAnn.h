@@ -27,13 +27,19 @@ namespace mh {
         template<typename Heuristics>
         void createInitialSolution(Heuristics h);
 
-        template<typename Heuristics>
-        void simAnn(Heuristics h);
+        template <typename CellHeuristics, typename PathHeuristics>
+        void simAnn(CellHeuristics ch, PathHeuristics ph);
 
         static double temperature(double t) { return std::exp(-t); }
 
-        Maze::MazePath<int> getNeighbor(Maze::MazePath<int>& state);
-        bool findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath);
+        template<typename Heuristics>
+        Maze::MazePath<int> getNeighbor(Maze::MazePath<int>& state, Heuristics h);
+
+        template<typename Heuristics>
+        bool findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath, Heuristics h);
+
+        template<typename CellHeuristics, typename PathHeuristics>
+        void testSimAnn(CellHeuristics ch, PathHeuristics ph);
 
     private:
         Maze mMaze;

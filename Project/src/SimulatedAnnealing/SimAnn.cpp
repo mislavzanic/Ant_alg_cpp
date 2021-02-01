@@ -32,7 +32,13 @@ namespace mh {
                    + std::abs((cell / mMaze.width()) - mMaze.end().second);
         });
 
-        simAnn([this](const Maze::MazePath<int>& state)
+        simAnn([this](int cell)
+        {
+            return mMaze.width() + mMaze.height()
+                   - std::abs((cell % mMaze.width()) - mMaze.end().first)
+                   + std::abs((cell / mMaze.width()) - mMaze.end().second);
+        },
+        [this](const Maze::MazePath<int>& state)
         {
             return mMaze.width() * mMaze.height() - state.length;
         });
@@ -46,7 +52,11 @@ namespace mh {
             return 1;
         });
 
-        simAnn([this](const Maze::MazePath<int>& state)
+        simAnn([this](int cell)
+        {
+            return 1;
+        },
+        [this](const Maze::MazePath<int>& state)
         {
             return state.length;
         });
@@ -83,18 +93,18 @@ namespace mh {
         mSolution.parentMap[start] = start;
     }
 
-    template <typename Heuristics>
-    void SimulatedAnnealing::simAnn(Heuristics h)
+    template <typename CellHeuristics, typename PathHeuristics>
+    void SimulatedAnnealing::simAnn(CellHeuristics ch, PathHeuristics ph)
     {
         Maze::MazePath<int> currentState = mSolution;
         for (int k = 0; k < mMaxIter; ++k)
         {
-            Maze::MazePath<int> neighbor = getNeighbor(currentState);
-            int costDiff = h(neighbor) - h(currentState);
+            Maze::MazePath<int> neighbor = getNeighbor(currentState, ch);
+            int costDiff = ph(neighbor) - ph(currentState);
             if (costDiff > 0)
             {
                 currentState = neighbor;
-                if (h(currentState) > h(mSolution))
+                if (ph(currentState) > ph(mSolution))
                     mSolution = currentState;
             }
             else
@@ -141,20 +151,22 @@ namespace mh {
         for (int neighbor : tempList) toVisit.push(neighbor);
     }
 
-    Maze::MazePath<int> SimulatedAnnealing::getNeighbor(Maze::MazePath<int>& state)
+    template <typename Heuristics>
+    Maze::MazePath<int> SimulatedAnnealing::getNeighbor(Maze::MazePath<int>& state, Heuristics h)
     {
         Maze::MazePath<int> returnPath;
         std::shuffle(state.intersections.begin(), state.intersections.end(), mMaze.getEngine().getEngine());
         int i = state.intersections.size() / 2;
-        if (findPath(state.intersections[i], returnPath, state))
+        if (findPath(state.intersections[i], returnPath, state, h))
             return returnPath;
         for (int intersection: state.intersections)
-            if (findPath(intersection, returnPath, state))
+            if (findPath(intersection, returnPath, state, h))
                 return returnPath;
         return returnPath;
     }
 
-    bool SimulatedAnnealing::findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath)
+    template <typename Heuristics>
+    bool SimulatedAnnealing::findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath, Heuristics h)
     {
         int end = mMaze.endAsInt();
         int start = mMaze.startAsInt();
@@ -180,12 +192,7 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             if (curr == end) break;
-            pickRandom(curr, toVisit, parentMap, [this](int cell)
-            {
-                return mMaze.width() + mMaze.height()
-                       - std::abs((cell % mMaze.width()) - mMaze.end().first)
-                       + std::abs((cell / mMaze.width()) - mMaze.end().second);
-            });
+            pickRandom(curr, toVisit, parentMap, h);
         }
         if (curr != end) return false;
 
@@ -199,5 +206,13 @@ namespace mh {
         newPath.parentMap[start] = start;
 
         return true;
+    }
+
+    template<typename CellHeuristics, typename PathHeuristics>
+    void SimulatedAnnealing::testSimAnn(CellHeuristics ch, PathHeuristics ph)
+    {
+        //nadji random tocke
+        //bfsom konstruiraj put izmedju svake dvije tocke
+        //odredi
     }
 }

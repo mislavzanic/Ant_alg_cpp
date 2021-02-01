@@ -19,22 +19,31 @@ namespace mh {
     public:
         AntColony(const std::string& filepath, int numOfAnts, int subsetLen, double p, double startPheromones);
         AntColony(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones);
-        Maze::MazePath<int> solve(int numOfIterations);
+        Maze::MazePath<int> shortestPath(int numOfIterations);
+        Maze::MazePath<int> longestPath(int numOfIterations);
 
     private:
-        void createSolution(std::map<int, int>& path);
+
+        template<class Probability>
+        Maze::MazePath<int> solve(int numOfIterations, Probability P);
+
+        template <typename Probability>
+        void createSolution(std::map<int, int>& path, Probability P);
 
         void getPath(std::map<int, int>& newPath, std::vector<std::set<int>>& paths);
-        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
+
+        template <typename Probability>
+        void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap, Probability P);
+
         void getSubset(std::vector<std::set<int>>& paths) const;
 
         void updatePheromones(const std::vector<std::set<int>>& bestPaths);
         void increasePheromones(const std::set<int>& path);
         void decreasePheromones(int Ant);
 
-        double probability(int cell) { return mPheromones[cell] * std::pow(heuristics(mMaze.intToPair(cell)), 3); }
+        double probability(int cell) { return mPheromones[cell] * std::pow(heuristics(cell), 3); }
 
-        int heuristics(std::pair<int, int> cell) { return mMaze.width() + mMaze.height() - std::abs(cell.first - mMaze.end().first) + std::abs(cell.second - mMaze.end().second); }
+        int heuristics(int cell) { return mMaze.width() + mMaze.height() - std::abs((cell % mMaze.width()) - mMaze.end().first) + std::abs((cell / mMaze.width()) - mMaze.end().second); }
 
     private:
         Maze mMaze;
