@@ -81,7 +81,7 @@ namespace mh {
         std::stack<int> toVisit;
         std::map<int, bool> visited;
         toVisit.push(start);
-        int prev = toVisit.top(), curr;
+        int curr;
         while (!toVisit.empty())
         {
             curr = toVisit.top();
@@ -91,7 +91,6 @@ namespace mh {
             if (curr == end) 
                 break;
             pickRandom(curr, toVisit, path, P);
-            prev = curr;
         }
     }
 

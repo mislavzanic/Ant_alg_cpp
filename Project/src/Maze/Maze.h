@@ -7,6 +7,9 @@
 
 #include <string>
 #include <map>
+#include <iostream>
+#include <stack>
+#include <array>
 #include <set>
 #include <list>
 #include <stb_image.h>
@@ -26,7 +29,7 @@ namespace mh {
         };
         
     public:
-        Maze(const std::string& filepath);
+        explicit Maze(const std::string& filepath);
         Maze(const Maze &maze);
         Maze(Maze &&maze) noexcept;
 
@@ -55,6 +58,22 @@ namespace mh {
     private:
         void loadImageFromFile(const std::string& filepath);
 
+    public:
+
+        int crossroads()
+        {
+            int num = 0;
+            for (int i = 0; i < mWidth * mHeight; ++i)
+            {
+                if (mMaze[i] && (neighbors(i) > 2 || neighbors(i) == 1))
+                {
+                    num++;
+                }
+            }
+
+            return num;
+        }
+
     private:
         int mHeight;
         int mWidth;
@@ -66,6 +85,28 @@ namespace mh {
 
         Random<std::mt19937> mRandEngine;
     };
+
+    class Graph
+    {
+    public:
+        using Vertex = std::pair<int, int>;
+
+    public:
+        explicit Graph(const Maze& m);
+
+        std::vector<Vertex>& getNeighbors(int cell)
+        {
+            if (!mGraph[cell].empty()) return mGraph[cell];
+        }
+
+        int bfs();
+
+    private:
+        std::map<int, std::vector<Vertex>> mGraph;
+        std::set<int> mVertices;
+        int mStart, mEnd;
+    };
+
 }
 
 #endif //MHRAD_MAZE_H

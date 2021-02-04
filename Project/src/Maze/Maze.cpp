@@ -5,6 +5,8 @@
 #include <cstdlib>
 #include <queue>
 #include <iostream>
+#include <algorithm>
+#include <util/StopWatch.h>
 
 namespace mh {
 
@@ -129,5 +131,78 @@ namespace mh {
         }
 
         return num;
+    }
+
+    Graph::Graph(const Maze &m)
+        : mStart(m.startAsInt()), mEnd(m.endAsInt())
+    {
+        std::queue<std::tuple<int, int, int>> Q;
+        Q.push({mStart, 0, mStart});
+        std::map<int, bool> visited;
+        while (!Q.empty())
+        {
+            auto next = Q.front();
+            Q.pop();
+            int cell = std::get<0>(next);
+            int length = std::get<1>(next);
+            int neighbor = std::get<2>(next);
+            if (visited[cell]) continue;
+            visited[cell] = true;
+            if (m[cell] && (m.neighbors(cell) > 2 || m.neighbors(cell) == 1))
+            {
+                mGraph[cell].push_back({neighbor, length});
+                mGraph[neighbor].push_back({cell, length});
+                mVertices.insert(cell);
+                neighbor = cell;
+                length = 0;
+            }
+
+            std::set<int> temp;
+            m.insertNeighbors(cell, temp);
+            for (int nextCell : temp)
+            {
+                Q.push({nextCell, length + 1, neighbor});
+            }
+        }
+    }
+
+    int Graph::bfs()
+    {
+        auto cmp = [](std::pair<int, int> a, std::pair<int, int> b){return a.second > b.second;};
+        std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, decltype(cmp)> Q(cmp);
+        std::map<int, bool> bio;
+        std::map<int, int> parentMap;
+        Q.push({mStart, 0});
+
+        while (!Q.empty())
+        {
+            int cell = Q.top().first;
+            int len = Q.top().second;
+            Q.pop();
+            if (bio[cell]) continue;
+            bio[cell] = true;
+            if (cell == mEnd) break;
+            auto& v = getNeighbors(cell);
+            for (auto& vv : v)
+            {
+                Q.push({vv.first, vv.second});
+                if (parentMap[vv.first] == 0) parentMap[vv.first] = cell;
+            }
+        }
+        int end = mEnd;
+        int len = 0;
+        while (end != mStart)
+        {
+            for (auto& vv : mGraph[end])
+            {
+                if (vv.first == parentMap[end])
+                {
+                    len += vv.second;
+                    end = parentMap[end];
+                    break;
+                }
+            }
+        }
+        return len;
     }
 }
