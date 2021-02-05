@@ -1,6 +1,5 @@
-#include "AntAlg.h"
+#include "AntAlgMaze.h"
 #include <stack>
-#include <array>
 #include <algorithm>
 #include <cassert>
 #include <set>
@@ -9,8 +8,9 @@
 
 namespace mh {
 
-    AntColony::AntColony(const std::string &filepath, int numOfAnts, int subsetLen, double p, double startPheromones)
-        : mMaze(filepath), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen),
+    AntColonyMaze::AntColonyMaze(const std::string &filepath, int numOfAnts, int subsetLen, double p, double startPheromones)
+        : mMaze(filepath), mRandomEngine(mMaze.getEngine()),
+          mNumOfAnts(numOfAnts), mSubsetLen(subsetLen),
           mDecreaseFactor(p), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
@@ -21,8 +21,9 @@ namespace mh {
         }
     }
 
-    AntColony::AntColony(const Maze &maze, int numOfAnts, int subsetLen, double p, double startPheromones)
-        : mMaze(maze), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen),
+    AntColonyMaze::AntColonyMaze(const Maze &maze, int numOfAnts, int subsetLen, double p, double startPheromones)
+        : mMaze(maze), mRandomEngine(mMaze.getEngine()),
+          mNumOfAnts(numOfAnts), mSubsetLen(subsetLen),
           mDecreaseFactor(p), mPheromones(new double[mMaze.width() * mMaze.height()]),
           mAllPheromones(new double[mMaze.width() * mMaze.height()])
     {
@@ -33,31 +34,18 @@ namespace mh {
         }
     }
 
-    Maze::MazePath<int> AntColony::shortestPath(int numOfIterations)
+    Maze::MazePath<int> AntColonyMaze::shortestPathMaze(int numOfIterations)
     {
-        return solve(numOfIterations, [this](int cell)
-        {
+        return solveMaze(numOfIterations, [this](int cell) {
             return mPheromones[cell] *
-                   std::pow(1,3);
-        });
-    }
-
-    Maze::MazePath<int> AntColony::longestPath(int numOfIterations) {
-        return solve(numOfIterations, [this](int cell)
-        {
-            return mPheromones[cell] *
-                   std::pow(mMaze.width() + mMaze.height()
-                            - std::abs((cell % mMaze.width()) - mMaze.end().first)
-                            + std::abs((cell / mMaze.width()) - mMaze.end().second),
-                            3);
+                   std::pow(1, 3);
         });
     }
 
     template <typename Probability>
-    Maze::MazePath<int> AntColony::solve(int numOfIterations, Probability P)
+    Maze::MazePath<int> AntColonyMaze::solveMaze(int numOfIterations, Probability P)
     {
-        int j = numOfIterations;
-        while (j)
+        while (numOfIterations)
         {
             std::vector<std::set<int>> paths;
             for (int i = 0; i < mNumOfAnts; ++i)
@@ -68,13 +56,13 @@ namespace mh {
             }
             getSubset(paths);
             updatePheromones(paths);
-            j--;
+            numOfIterations--;
         }
         return mBestPath;
     }
 
     template <typename Probability>
-    void AntColony::createSolution(std::map<int, int>& path, Probability P)
+    void AntColonyMaze::createSolution(std::map<int, int>& path, Probability P)
     {
         int start = mMaze.startAsInt();
         int end = mMaze.endAsInt();
@@ -94,7 +82,7 @@ namespace mh {
         }
     }
 
-    void AntColony::updatePheromones(const std::vector<std::set<int>>& bestPaths)
+    void AntColonyMaze::updatePheromones(const std::vector<std::set<int>>& bestPaths)
     {
         for (int i = 0; i < mSubsetLen; ++i)
             increasePheromones(bestPaths[i]);
@@ -106,7 +94,7 @@ namespace mh {
     }
 
     template <typename Probability>
-    void AntColony::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int> &parentMap, Probability P)
+    void AntColonyMaze::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int> &parentMap, Probability P)
     {
         std::set<int> neighborCells;
         int num = mMaze.insertNeighbors(cell, neighborCells);
@@ -124,7 +112,7 @@ namespace mh {
         std::list<int> tempList;
         while (sum > 0 && num > 0)
         {
-            double r = mMaze.getEngine().getDoubleInRange(0, sum);
+            double r = mRandomEngine.getDoubleInRange(0, sum);
             double total = 0;
             int pickedCell;
             for (int neighbor : neighborCells)
@@ -144,7 +132,7 @@ namespace mh {
         for (int neighbor : tempList) toVisit.push(neighbor);
     }
 
-    void AntColony::getPath(std::map<int, int> &newPath, std::vector<std::set<int>> &paths)
+    void AntColonyMaze::getPath(std::map<int, int> &newPath, std::vector<std::set<int>> &paths)
     {
         int start = mMaze.startAsInt(), end = mMaze.endAsInt();
         Maze::MazePath<int> solution;
@@ -167,17 +155,17 @@ namespace mh {
         }
     }
 
-    void AntColony::increasePheromones(const std::set<int>& path)
+    void AntColonyMaze::increasePheromones(const std::set<int>& path)
     {
         for (auto cell : path) this->mPheromones[cell] += this->mAllPheromones[cell];
     }
 
-    void AntColony::decreasePheromones(int Ant)
+    void AntColonyMaze::decreasePheromones(int Ant)
     {
         mPheromones[Ant] *= (1 - mDecreaseFactor);
     }
 
-    void AntColony::getSubset(std::vector<std::set<int>> &paths) const
+    void AntColonyMaze::getSubset(std::vector<std::set<int>> &paths) const
     {
         std::sort(paths.begin(), paths.end(), [](auto& a, auto& b){ return a.size() < b.size(); });
     }

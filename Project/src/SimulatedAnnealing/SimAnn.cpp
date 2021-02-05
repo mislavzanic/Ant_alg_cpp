@@ -7,12 +7,13 @@
 namespace mh {
 
     SimulatedAnnealing::SimulatedAnnealing(const std::string &filepath, int maxIter)
-        : mMaze(filepath), mGoal({mMaze.width(), mMaze.height()}), mMaxIter(maxIter)
+        : mMaze(filepath), mRandomEngine(mMaze.getEngine()),
+          mGoal({mMaze.width(), mMaze.height()}), mMaxIter(maxIter)
     {
     }
 
     SimulatedAnnealing::SimulatedAnnealing(const Maze& m, int maxIter)
-        : mMaze(m), mMaxIter(maxIter),
+        : mMaze(m), mRandomEngine(mMaze.getEngine()), mMaxIter(maxIter),
           mGoal({mMaze.end().first, mMaze.end().second})
     {
     }
@@ -109,7 +110,7 @@ namespace mh {
             }
             else
             {
-                double random = mMaze.getEngine().getDoubleInRange(0, 1);
+                double random = mRandomEngine.getDoubleInRange(0, 1);
                 double T = temperature((double)costDiff / (double)(mMaxIter - k));
                 if (random < T) currentState = neighbor;
             }
@@ -131,7 +132,7 @@ namespace mh {
         std::list<int> tempList;
         while (sum > 0 && num > 0)
         {
-            double r = mMaze.getEngine().getDoubleInRange(0, sum);
+            double r = mRandomEngine.getDoubleInRange(0, sum);
             double total = 0;
             int pickedCell;
             for (int neighbor : neighborCells)
@@ -155,7 +156,7 @@ namespace mh {
     Maze::MazePath<int> SimulatedAnnealing::getNeighbor(Maze::MazePath<int>& state, Heuristics h)
     {
         Maze::MazePath<int> returnPath;
-        std::shuffle(state.intersections.begin(), state.intersections.end(), mMaze.getEngine().getEngine());
+        std::shuffle(state.intersections.begin(), state.intersections.end(), mRandomEngine.getEngine());
         int i = state.intersections.size() / 2;
         if (findPath(state.intersections[i], returnPath, state, h))
             return returnPath;

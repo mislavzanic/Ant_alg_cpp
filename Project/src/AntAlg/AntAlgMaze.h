@@ -1,5 +1,5 @@
-#ifndef MHRAD_ANTALG_H
-#define MHRAD_ANTALG_H
+#ifndef MHRAD_ANTALGMAZE_H
+#define MHRAD_ANTALGMAZE_H
 
 #include "Maze/Maze.h"
 #include "util/Random.h"
@@ -13,19 +13,18 @@
 
 
 namespace mh {
-
-    class AntColony
+    class AntColonyMaze
     {
     public:
-        AntColony(const std::string& filepath, int numOfAnts, int subsetLen, double p, double startPheromones);
-        AntColony(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones);
-        Maze::MazePath<int> shortestPath(int numOfIterations);
-        Maze::MazePath<int> longestPath(int numOfIterations);
+        AntColonyMaze(const std::string& filepath, int numOfAnts, int subsetLen, double p, double startPheromones);
+        AntColonyMaze(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones);
+
+        Maze::MazePath<int> shortestPathMaze(int numOfIterations);
 
     private:
 
         template<class Probability>
-        Maze::MazePath<int> solve(int numOfIterations, Probability P);
+        Maze::MazePath<int> solveMaze(int numOfIterations, Probability P);
 
         template <typename Probability>
         void createSolution(std::map<int, int>& path, Probability P);
@@ -55,10 +54,11 @@ namespace mh {
         double *mAllPheromones;
         double mDecreaseFactor;
 
+        Random<std::mt19937> mRandomEngine;
+
         Maze::MazePath<int> mBestPath;
     };
-
 }
 
 
-#endif //MHRAD_ANTALG_H
+#endif //MHRAD_ANTALGMAZE_H

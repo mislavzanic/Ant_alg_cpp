@@ -51,7 +51,7 @@ namespace mh {
         int pairToInt(const std::pair<int, int> coord) const { return coord.first + coord.second * mWidth; }
         std::pair<int, int> intToPair(int coord) const { return std::make_pair<int, int>(coord % mWidth, coord / mWidth); }
 
-        Random<std::mt19937>& getEngine() { return mRandEngine; };
+        const Random<std::mt19937> & getEngine() const { return mRandEngine; };
 
         void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
 
@@ -91,15 +91,29 @@ namespace mh {
     public:
         using Vertex = std::pair<int, int>;
 
+        struct GraphPath
+        {
+            GraphPath() : length(0) {}
+            std::set<int> vertices;
+            int length;
+        };
+
+        int getEdgeLength(int v1, int v2);
+
     public:
         explicit Graph(const Maze& m);
+        int bfs();
 
         std::vector<Vertex>& getNeighbors(int cell)
         {
             if (!mGraph[cell].empty()) return mGraph[cell];
         }
 
-        int bfs();
+        const std::set<int>& getAllVertices() { return mVertices; }
+        int start() const { return mStart; }
+        int end() const { return mEnd; }
+
+
 
     private:
         std::map<int, std::vector<Vertex>> mGraph;

@@ -48,6 +48,8 @@ namespace mh {
 
         Maze::MazePath<int> mSolution;
         std::pair<int, int> mGoal;
+
+        Random<std::mt19937> mRandomEngine;
     };
 }
 

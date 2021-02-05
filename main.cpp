@@ -5,12 +5,18 @@ using namespace mh;
 
 int main()
 {
-    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/m1.bmp");
-    AntColony a(m, 20, 6, 0.5f, 1.0f);
+    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/braid1.bmp");
+    AntColonyMaze a(m, 10, 3, 0.5f, 1.0f);
+    AntColonyGraph ag(m, 20, 6, 0.5f, 1.0f);
     SimulatedAnnealing s(m, 60);
-    StopWatch sw;
 
-    Maze::MazePath<int> solution = a.shortestPath(15);
+    StopWatch sw;
+    ag.solve(15);
+    auto tt = sw.getElapsedTime();
+    std::cout << tt.count() << std::endl;
+    sw.reset();
+
+    Maze::MazePath<int> solution = a.shortestPathMaze(15);
     auto timeAnt = sw.getElapsedTime();
 
     sw.reset();

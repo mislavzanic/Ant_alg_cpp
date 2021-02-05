@@ -205,4 +205,15 @@ namespace mh {
         }
         return len;
     }
+
+    int Graph::getEdgeLength(int v1, int v2)
+    {
+        auto& neighbors = getNeighbors(v1);
+        for (auto neighbor : neighbors)
+        {
+            if (neighbor.first == v2) return neighbor.second;
+        }
+        std::cout << v1 << " " << v2 << std::endl;
+        assert(false);
+    }
 }

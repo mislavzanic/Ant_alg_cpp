@@ -10,7 +10,8 @@
 #include "util/StopWatch.h"
 
 #include "Maze/Maze.h"
-#include "AntAlg/AntAlg.h"
+#include "AntAlg/AntAlgMaze.h"
+#include "AntAlg/AntAlgGraph.h"
 #include "SimulatedAnnealing/SimAnn.h"
 
 
