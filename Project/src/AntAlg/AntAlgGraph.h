@@ -20,11 +20,10 @@ namespace mh {
     {
     public:
         AntColonyGraph(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones);
-        Maze::MazePath<int> solve(int numOfIterations);
+        Graph::GraphPath solve(int numOfIterations);
 
     private:
         void createSolution(std::map<int, int>& parentMap);
-        Maze::MazePath<int> getMazePath();
         void getPath(std::map<int, int>& parentMap, std::vector<Graph::GraphPath>& paths);
         void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
 

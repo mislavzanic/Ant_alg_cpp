@@ -133,12 +133,41 @@ namespace mh {
         return num;
     }
 
+    void Maze::modifyGraph(Graph &graph, const std::tuple<uint8_t, uint8_t, uint8_t> &color, const std::string &filename)
+    {
+        size_t imgSize = mWidth * mHeight * mChannels;
+        stbi_uc* newImg = new stbi_uc[imgSize];
+        int i = 0;
+        for (stbi_uc *p = mData, *np = newImg; p != mData + imgSize; p += mChannels, np += mChannels)
+        {
+            if (!graph.mGraph[i].empty())
+            {
+                *np = std::get<0>(color);
+                *(np + 1) = std::get<1>(color);
+                *(np + 2) = std::get<2>(color);
+            }
+            else
+            {
+                *np = *p;
+                *(np + 1) = *(p + 1);
+                *(np + 2) = *(p + 2);
+            }
+            if (mChannels == 4) *(np + 3) = *(p + 3);
+            i++;
+        }
+
+        stbi_write_bmp(filename.c_str(), mWidth, mHeight, mChannels, newImg);
+        delete[] newImg;
+    }
+
     Graph::Graph(const Maze &m)
         : mStart(m.startAsInt()), mEnd(m.endAsInt())
     {
         std::queue<std::tuple<int, int, int>> Q;
         Q.push({mStart, 0, mStart});
-        std::map<int, bool> visited;
+        std::map<std::pair<int, int>, bool> visitedNeighbors;
+        std::map<int, std::vector<std::pair<int, int>>> visited;
+        std::map<std::pair<int, int>, bool> pairMap;
         while (!Q.empty())
         {
             auto next = Q.front();
@@ -146,12 +175,34 @@ namespace mh {
             int cell = std::get<0>(next);
             int length = std::get<1>(next);
             int neighbor = std::get<2>(next);
-            if (visited[cell]) continue;
-            visited[cell] = true;
+            if (!visited[cell].empty())
+            {
+                if (!visitedNeighbors[{cell, neighbor}])
+                {
+                    for (auto& vertices : visited[cell])
+                    {
+                        if (!pairMap[{neighbor, vertices.first}])
+                        {
+                            mGraph[neighbor].push_back({vertices.first, length + vertices.second});
+                            mGraph[vertices.first].push_back({neighbor, length + vertices.second});
+                            pairMap[{neighbor, vertices.first}] = true;
+                            pairMap[{vertices.first, neighbor}] = true;
+                        }
+                    }
+
+                    visitedNeighbors[{cell, neighbor}] = true;
+                    visited[cell].push_back({neighbor, length});
+                }
+                continue;
+            }
+            visited[cell].push_back({neighbor, length});
+            visitedNeighbors[{cell, neighbor}] = true;
             if (m[cell] && (m.neighbors(cell) > 2 || m.neighbors(cell) == 1))
             {
                 mGraph[cell].push_back({neighbor, length});
                 mGraph[neighbor].push_back({cell, length});
+                pairMap[{neighbor, cell}] = true;
+                pairMap[{cell, neighbor}] = true;
                 mVertices.insert(cell);
                 neighbor = cell;
                 length = 0;
@@ -161,23 +212,23 @@ namespace mh {
             m.insertNeighbors(cell, temp);
             for (int nextCell : temp)
             {
-                Q.push({nextCell, length + 1, neighbor});
+                if (visited[nextCell].empty())
+                    Q.push({nextCell, length + 1, neighbor});
             }
         }
     }
 
     int Graph::bfs()
     {
-        auto cmp = [](std::pair<int, int> a, std::pair<int, int> b){return a.second > b.second;};
-        std::priority_queue<std::pair<int, int>, std::vector<std::pair<int, int>>, decltype(cmp)> Q(cmp);
+        std::queue<std::pair<int, int>> Q;
         std::map<int, bool> bio;
         std::map<int, int> parentMap;
         Q.push({mStart, 0});
 
         while (!Q.empty())
         {
-            int cell = Q.top().first;
-            int len = Q.top().second;
+            int cell = Q.front().first;
+            int len = Q.front().second;
             Q.pop();
             if (bio[cell]) continue;
             bio[cell] = true;

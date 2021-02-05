@@ -17,6 +17,8 @@
 
 namespace mh {
 
+    class Graph;
+
     class Maze
     {
     public:
@@ -54,6 +56,7 @@ namespace mh {
         const Random<std::mt19937> & getEngine() const { return mRandEngine; };
 
         void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
+        void modifyGraph(Graph& graph, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
 
     private:
         void loadImageFromFile(const std::string& filepath);
@@ -113,9 +116,7 @@ namespace mh {
         int start() const { return mStart; }
         int end() const { return mEnd; }
 
-
-
-    private:
+    public:
         std::map<int, std::vector<Vertex>> mGraph;
         std::set<int> mVertices;
         int mStart, mEnd;

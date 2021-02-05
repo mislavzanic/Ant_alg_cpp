@@ -20,7 +20,7 @@ namespace mh {
         mBestPath.length = -1;
     }
 
-    Maze::MazePath<int> AntColonyGraph::solve(int numOfIterations)
+    Graph::GraphPath AntColonyGraph::solve(int numOfIterations)
     {
         while (numOfIterations)
         {
@@ -35,8 +35,7 @@ namespace mh {
             updatePheromones(paths);
             numOfIterations--;
         }
-
-        return getMazePath();
+        return mBestPath;
     }
 
     void AntColonyGraph::createSolution(std::map<int, int>& parentMap)
@@ -99,12 +98,7 @@ namespace mh {
         }
 
         for (int neighbor : tempList) toVisit.push(neighbor);
-    }
 
-    Maze::MazePath<int> AntColonyGraph::getMazePath()
-    {
-        std::cout << mBestPath.length << std::endl;
-        return Maze::MazePath<int>();
     }
 
     void AntColonyGraph::getPath(std::map<int, int> &parentMap, std::vector<Graph::GraphPath> &paths)
