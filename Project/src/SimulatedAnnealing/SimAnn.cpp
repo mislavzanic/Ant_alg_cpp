@@ -8,19 +8,17 @@ namespace mh {
 
     SimulatedAnnealing::SimulatedAnnealing(const std::string &filepath, int maxIter)
         : mMaze(filepath), mRandomEngine(mMaze.getEngine()),
-          mGoal({mMaze.width(), mMaze.height()}), mMaxIter(maxIter)
+          mMaxIter(maxIter)
     {
     }
 
     SimulatedAnnealing::SimulatedAnnealing(const Maze& m, int maxIter)
-        : mMaze(m), mRandomEngine(mMaze.getEngine()), mMaxIter(maxIter),
-          mGoal({mMaze.end().first, mMaze.end().second})
+        : mMaze(m), mRandomEngine(mMaze.getEngine()), mMaxIter(maxIter)
     {
     }
 
     SimulatedAnnealing::SimulatedAnnealing(Maze&& m, int maxIter)
-        : mMaze(std::move(m)), mMaxIter(maxIter),
-          mGoal({mMaze.end().first, mMaze.end().second})
+        : mMaze(std::move(m)), mMaxIter(maxIter)
     {
     }
     
@@ -207,13 +205,5 @@ namespace mh {
         newPath.parentMap[start] = start;
 
         return true;
-    }
-
-    template<typename CellHeuristics, typename PathHeuristics>
-    void SimulatedAnnealing::testSimAnn(CellHeuristics ch, PathHeuristics ph)
-    {
-        //nadji random tocke
-        //bfsom konstruiraj put izmedju svake dvije tocke
-        //odredi
     }
 }

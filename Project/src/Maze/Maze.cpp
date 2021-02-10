@@ -133,14 +133,14 @@ namespace mh {
         return num;
     }
 
-    void Maze::modifyGraph(Graph &graph, const std::tuple<uint8_t, uint8_t, uint8_t> &color, const std::string &filename)
+    void Maze::modifyGraph(std::vector<int> &graph, const std::tuple<uint8_t, uint8_t, uint8_t> &color, const std::string &filename)
     {
         size_t imgSize = mWidth * mHeight * mChannels;
         stbi_uc* newImg = new stbi_uc[imgSize];
         int i = 0;
         for (stbi_uc *p = mData, *np = newImg; p != mData + imgSize; p += mChannels, np += mChannels)
         {
-            if (!graph.mGraph[i].empty())
+            if (std::find(graph.begin(), graph.end(), i) != graph.end())
             {
                 *np = std::get<0>(color);
                 *(np + 1) = std::get<1>(color);
@@ -177,6 +177,7 @@ namespace mh {
             int neighbor = std::get<2>(next);
             if (!visited[cell].empty())
             {
+                if (m.neighbors(cell) > 2) continue;
                 if (!visitedNeighbors[{cell, neighbor}])
                 {
                     for (auto& vertices : visited[cell])

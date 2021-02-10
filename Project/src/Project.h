@@ -12,6 +12,7 @@
 #include "Maze/Maze.h"
 #include "AntAlg/AntAlgMaze.h"
 #include "AntAlg/AntAlgGraph.h"
+#include "SimulatedAnnealing/SimAnnGraph.h"
 #include "SimulatedAnnealing/SimAnn.h"
 
 

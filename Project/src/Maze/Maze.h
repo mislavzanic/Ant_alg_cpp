@@ -56,7 +56,7 @@ namespace mh {
         const Random<std::mt19937> & getEngine() const { return mRandEngine; };
 
         void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
-        void modifyGraph(Graph& graph, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
+        void modifyGraph(std::vector<int>& graph, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
 
     private:
         void loadImageFromFile(const std::string& filepath);
@@ -97,6 +97,8 @@ namespace mh {
         struct GraphPath
         {
             GraphPath() : length(0) {}
+
+            std::map<int, int> parentMap;
             std::set<int> vertices;
             int length;
         };

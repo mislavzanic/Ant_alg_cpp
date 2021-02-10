@@ -13,6 +13,7 @@ namespace mh {
     class SimulatedAnnealing
     {
     public:
+
         SimulatedAnnealing(const std::string& filepath, int maxIter);
         SimulatedAnnealing(const Maze& m, int maxIter);
         SimulatedAnnealing(Maze&& m, int maxIter);
@@ -38,16 +39,12 @@ namespace mh {
         template<typename Heuristics>
         bool findPath(int intersection, Maze::MazePath<int>& newPath, Maze::MazePath<int>& currentPath, Heuristics h);
 
-        template<typename CellHeuristics, typename PathHeuristics>
-        void testSimAnn(CellHeuristics ch, PathHeuristics ph);
-
     private:
         Maze mMaze;
 
         int mMaxIter;
 
         Maze::MazePath<int> mSolution;
-        std::pair<int, int> mGoal;
 
         Random<std::mt19937> mRandomEngine;
     };
