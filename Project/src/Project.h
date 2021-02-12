@@ -8,6 +8,7 @@
 #include "util/Random.h"
 #include "util/PathfindingAlg.h"
 #include "util/StopWatch.h"
+#include "util/ImageProcessing.h"
 
 #include "Maze/MatrixMaze.h"
 #include "Maze/Graph.h"

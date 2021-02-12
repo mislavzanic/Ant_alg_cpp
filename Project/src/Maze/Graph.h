@@ -6,6 +6,7 @@
 #define MHRAD_GRAPH_H
 
 #include "MazeInterface.h"
+#include "util/ImageProcessing.h"
 #include <map>
 #include <string>
 #include <set>
@@ -27,9 +28,6 @@ namespace mh {
         virtual int getEnd() const override { return mEnd; }
         virtual int getMazeWidth() const override { return mWidth; }
         virtual int getMazeHeight() const override { return mHeight; }
-
-    private:
-        bool* readFromFile(const std::string& filepath);
 
     private:
         std::map<int, std::map<int, int>> mMaze;

@@ -31,6 +31,7 @@ namespace mh {
         std::set<int> vertices;
         int length;
         std::map<int, int> parentMap;
+        std::map<int, int> edgeLengthMap;
     };
 
 }

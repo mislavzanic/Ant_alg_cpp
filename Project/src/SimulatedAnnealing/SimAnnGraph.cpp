@@ -81,7 +81,9 @@ namespace mh {
         {
             mSolution.parentMap[curr] = parentMap[curr];
             mSolution.vertices.insert(parentMap[curr]);
-            mSolution.length += mMaze->getEdgeLength(curr, parentMap[curr]);
+            int edgeLength = mMaze->getEdgeLength(curr, parentMap[curr]);
+            mSolution.length += edgeLength;
+            mSolution.edgeLengthMap[curr] = edgeLength;
             curr = parentMap[curr];
         }
 
@@ -154,7 +156,9 @@ namespace mh {
         while (curr != start)
         {
             newPath.parentMap[curr] = parentMap[curr];
-            newPath.length += mMaze->getEdgeLength(curr, parentMap[curr]);
+            int edgeLength = mMaze->getEdgeLength(curr, parentMap[curr]);
+            newPath.length += edgeLength;
+            newPath.edgeLengthMap[curr] = edgeLength;
             newPath.vertices.insert(parentMap[curr]);
             curr = parentMap[curr];
         }

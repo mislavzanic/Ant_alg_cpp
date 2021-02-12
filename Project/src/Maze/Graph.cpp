@@ -11,7 +11,7 @@ namespace mh {
 
     Graph::Graph(const std::string& filepath)
     {
-        bool* maze = readFromFile(filepath);
+        bool* maze = readFromFile(filepath, &mWidth, &mHeight, &mChannels, &mStart, &mEnd);
         std::queue<std::tuple<int, int, int>> Q;
         Q.push({mStart, 0, mStart});
         std::map<std::pair<int, int>, bool> visitedNeighbors;
@@ -90,39 +90,5 @@ namespace mh {
         }
 
         delete[] maze;
-    }
-
-    bool *Graph::readFromFile(const std::string &filepath)
-    {
-        auto* mData = stbi_load(filepath.c_str(), &mWidth, &mHeight, &mChannels, 0);
-        assert(mData != nullptr);
-        bool* temp = new bool[mWidth * mHeight];
-        size_t dataSize = mWidth * mHeight * mChannels;
-        int i = 0, j = 0;
-        for (auto* p = mData; p != mData + dataSize; p += mChannels)
-        {
-            if ((bool)(*p))
-            {
-                temp[i * mWidth + j] = true;
-                if (i == 0)
-                {
-                    mStart = j + i * mWidth;
-                }
-                else if (i == mHeight - 1)
-                {
-                    mEnd = j + i * mWidth;
-                }
-            }
-            else temp[i * mWidth + j] = false;
-
-            j++;
-            if (j == mWidth)
-            {
-                j = 0;
-                i++;
-            }
-        }
-
-        return temp;
     }
 }

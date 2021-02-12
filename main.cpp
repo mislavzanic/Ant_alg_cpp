@@ -12,6 +12,16 @@ int main()
     auto time = sw.getElapsedTime();
     std::cout << path.length << " " << time.count() << std::endl;
 
+    int current = *path.vertices.begin();
+    int end = path.parentMap[current];
+    int length = path.edgeLengthMap[end];
+    std::stack<std::pair<int, int>> S;
+    S.push({current,0 });
+    while (!S.empty())
+    {
+
+    }
+
     sw.reset();
     path = sg.solve();
     time = sw.getElapsedTime();
