@@ -3,9 +3,8 @@ cmake_minimum_required(VERSION 3.19)
 add_library(
         Maze STATIC
         Maze/MatrixMaze.h Maze/MatrixMaze.cpp Maze/Graph.cpp Maze/Graph.h Maze/MazeInterface.h
-        AntAlg/AntAlgMaze.cpp AntAlg/AntAlgMaze.h SimulatedAnnealing/SimAnn.cpp SimulatedAnnealing/SimAnn.h
         util/Random.h util/PathfindingAlg.h util/StopWatch.h
-        AntAlg/AntAlgGraph.cpp AntAlg/AntAlgGraph.h AntAlg/AntAlgGraph.cpp AntAlg/AntAlgGraph.h SimulatedAnnealing/SimAnnGraph.cpp SimulatedAnnealing/SimAnnGraph.h )
+        AntAlg/AntAlgGraph.cpp AntAlg/AntAlgGraph.h SimulatedAnnealing/SimAnnGraph.cpp SimulatedAnnealing/SimAnnGraph.h )
 
 target_include_directories(
         Maze PUBLIC

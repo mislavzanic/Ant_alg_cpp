@@ -10,10 +10,9 @@
 #include "util/StopWatch.h"
 
 #include "Maze/MatrixMaze.h"
-#include "AntAlg/AntAlgMaze.h"
+#include "Maze/Graph.h"
 #include "AntAlg/AntAlgGraph.h"
 #include "SimulatedAnnealing/SimAnnGraph.h"
-#include "SimulatedAnnealing/SimAnn.h"
 
 
 #endif //MHRAD_PROJECT_H
