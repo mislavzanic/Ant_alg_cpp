@@ -133,139 +133,28 @@ namespace mh {
         return num;
     }
 
-    void Maze::modifyGraph(std::vector<int> &graph, const std::tuple<uint8_t, uint8_t, uint8_t> &color, const std::string &filename)
+    void Maze::modifyGraph(Graph::GraphPath &graphPath, const std::tuple<uint8_t, uint8_t, uint8_t> &color, const std::string &filename)
     {
-        size_t imgSize = mWidth * mHeight * mChannels;
-        stbi_uc* newImg = new stbi_uc[imgSize];
-        int i = 0;
-        for (stbi_uc *p = mData, *np = newImg; p != mData + imgSize; p += mChannels, np += mChannels)
-        {
-            if (std::find(graph.begin(), graph.end(), i) != graph.end())
-            {
-                *np = std::get<0>(color);
-                *(np + 1) = std::get<1>(color);
-                *(np + 2) = std::get<2>(color);
-            }
-            else
-            {
-                *np = *p;
-                *(np + 1) = *(p + 1);
-                *(np + 2) = *(p + 2);
-            }
-            if (mChannels == 4) *(np + 3) = *(p + 3);
-            i++;
-        }
-
-        stbi_write_bmp(filename.c_str(), mWidth, mHeight, mChannels, newImg);
-        delete[] newImg;
+        MazePath<int> path = createMazePathFromGraph(graphPath);
+        modifyImage(path.parentMap, color, filename);
     }
 
-    Graph::Graph(const Maze &m)
-        : mStart(m.startAsInt()), mEnd(m.endAsInt())
+    Maze::MazePath<int> Maze::createMazePathFromGraph(Graph::GraphPath& graphPath) const
     {
-        std::queue<std::tuple<int, int, int>> Q;
-        Q.push({mStart, 0, mStart});
-        std::map<std::pair<int, int>, bool> visitedNeighbors;
-        std::map<int, std::vector<std::pair<int, int>>> visited;
-        std::map<std::pair<int, int>, bool> pairMap;
+        MazePath<int> returnPath;
+
+        int end = endAsInt();
+        std::stack<std::pair<int, int>> Q;
+        Q.push({end, 0});
+        int endNode = graphPath.parentMap[end];
         while (!Q.empty())
         {
-            auto next = Q.front();
+            int node = Q.top().first;
+            int currLength = Q.top().second;
             Q.pop();
-            int cell = std::get<0>(next);
-            int length = std::get<1>(next);
-            int neighbor = std::get<2>(next);
-            if (!visited[cell].empty())
+            if (node == endNode)
             {
-                if (m.neighbors(cell) > 2) continue;
-                if (!visitedNeighbors[{cell, neighbor}])
-                {
-                    for (auto& vertices : visited[cell])
-                    {
-                        if (!pairMap[{neighbor, vertices.first}])
-                        {
-                            mGraph[neighbor].push_back({vertices.first, length + vertices.second});
-                            mGraph[vertices.first].push_back({neighbor, length + vertices.second});
-                            pairMap[{neighbor, vertices.first}] = true;
-                            pairMap[{vertices.first, neighbor}] = true;
-                        }
-                    }
-
-                    visitedNeighbors[{cell, neighbor}] = true;
-                    visited[cell].push_back({neighbor, length});
-                }
-                continue;
-            }
-            visited[cell].push_back({neighbor, length});
-            visitedNeighbors[{cell, neighbor}] = true;
-            if (m[cell] && (m.neighbors(cell) > 2 || m.neighbors(cell) == 1))
-            {
-                mGraph[cell].push_back({neighbor, length});
-                mGraph[neighbor].push_back({cell, length});
-                pairMap[{neighbor, cell}] = true;
-                pairMap[{cell, neighbor}] = true;
-                mVertices.insert(cell);
-                neighbor = cell;
-                length = 0;
-            }
-
-            std::set<int> temp;
-            m.insertNeighbors(cell, temp);
-            for (int nextCell : temp)
-            {
-                if (visited[nextCell].empty())
-                    Q.push({nextCell, length + 1, neighbor});
             }
         }
-    }
-
-    int Graph::bfs()
-    {
-        std::queue<std::pair<int, int>> Q;
-        std::map<int, bool> bio;
-        std::map<int, int> parentMap;
-        Q.push({mStart, 0});
-
-        while (!Q.empty())
-        {
-            int cell = Q.front().first;
-            int len = Q.front().second;
-            Q.pop();
-            if (bio[cell]) continue;
-            bio[cell] = true;
-            if (cell == mEnd) break;
-            auto& v = getNeighbors(cell);
-            for (auto& vv : v)
-            {
-                Q.push({vv.first, vv.second});
-                if (parentMap[vv.first] == 0) parentMap[vv.first] = cell;
-            }
-        }
-        int end = mEnd;
-        int len = 0;
-        while (end != mStart)
-        {
-            for (auto& vv : mGraph[end])
-            {
-                if (vv.first == parentMap[end])
-                {
-                    len += vv.second;
-                    end = parentMap[end];
-                    break;
-                }
-            }
-        }
-        return len;
-    }
-
-    int Graph::getEdgeLength(int v1, int v2)
-    {
-        auto& neighbors = getNeighbors(v1);
-        for (auto neighbor : neighbors)
-        {
-            if (neighbor.first == v2) return neighbor.second;
-        }
-        std::cout << v1 << " " << v2 << std::endl;
-        assert(false);
     }
 }

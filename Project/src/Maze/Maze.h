@@ -14,10 +14,9 @@
 #include <list>
 #include <stb_image.h>
 #include "util/Random.h"
+#include "Graph.h"
 
 namespace mh {
-
-    class Graph;
 
     class Maze
     {
@@ -26,7 +25,7 @@ namespace mh {
         struct MazePath
         {
             std::map<T, T> parentMap;
-            std::vector<T> intersections;
+            std::set<T> intersections;
             size_t length = 0;
         };
         
@@ -56,26 +55,12 @@ namespace mh {
         const Random<std::mt19937> & getEngine() const { return mRandEngine; };
 
         void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
-        void modifyGraph(std::vector<int>& graph, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
+        void modifyGraph(Graph::GraphPath& graphPath, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
 
     private:
         void loadImageFromFile(const std::string& filepath);
-
-    public:
-
-        int crossroads()
-        {
-            int num = 0;
-            for (int i = 0; i < mWidth * mHeight; ++i)
-            {
-                if (mMaze[i] && (neighbors(i) > 2 || neighbors(i) == 1))
-                {
-                    num++;
-                }
-            }
-
-            return num;
-        }
+        MazePath<int> createMazePathFromGraph(Graph::GraphPath& graphPath) const;
+        void createMazePathFromGraph();
 
     private:
         int mHeight;
@@ -87,42 +72,10 @@ namespace mh {
         stbi_uc* mData;
 
         Random<std::mt19937> mRandEngine;
+
     };
 
-    class Graph
-    {
-    public:
-        using Vertex = std::pair<int, int>;
 
-        struct GraphPath
-        {
-            GraphPath() : length(0) {}
-
-            std::map<int, int> parentMap;
-            std::set<int> vertices;
-            int length;
-        };
-
-        int getEdgeLength(int v1, int v2);
-
-    public:
-        explicit Graph(const Maze& m);
-        int bfs();
-
-        std::vector<Vertex>& getNeighbors(int cell)
-        {
-            if (!mGraph[cell].empty()) return mGraph[cell];
-        }
-
-        const std::set<int>& getAllVertices() { return mVertices; }
-        int start() const { return mStart; }
-        int end() const { return mEnd; }
-
-    public:
-        std::map<int, std::vector<Vertex>> mGraph;
-        std::set<int> mVertices;
-        int mStart, mEnd;
-    };
 
 }
 

@@ -85,7 +85,7 @@ namespace mh {
         while (curr != start)
         {
             mSolution.parentMap[curr] = parentMap[curr];
-            if (mMaze.neighbors(curr) > 2) mSolution.intersections.push_back(curr);
+            if (mMaze.neighbors(curr) > 2) mSolution.intersections.insert(curr);
             mSolution.length++;
             curr = parentMap[curr];
         }
@@ -154,9 +154,8 @@ namespace mh {
     Maze::MazePath<int> SimulatedAnnealing::getNeighbor(Maze::MazePath<int>& state, Heuristics h)
     {
         Maze::MazePath<int> returnPath;
-        std::shuffle(state.intersections.begin(), state.intersections.end(), mRandomEngine.getEngine());
         int i = state.intersections.size() / 2;
-        if (findPath(state.intersections[i], returnPath, state, h))
+        if (findPath(*std::next(state.intersections.begin() + i),returnPath, state, h))
             return returnPath;
         for (int intersection: state.intersections)
             if (findPath(intersection, returnPath, state, h))
@@ -198,7 +197,7 @@ namespace mh {
         while (curr != start)
         {
             newPath.parentMap[curr] = parentMap[curr];
-            if (mMaze.neighbors(curr) > 2) newPath.intersections.push_back(curr);
+            if (mMaze.neighbors(curr) > 2) newPath.intersections.insert(curr);
             newPath.length++;
             curr = parentMap[curr];
         }
