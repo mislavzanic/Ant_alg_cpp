@@ -5,78 +5,43 @@
 #ifndef MHRAD_MAZE_H
 #define MHRAD_MAZE_H
 
+#include "MazeInterface.h"
 #include <string>
-#include <map>
-#include <iostream>
-#include <stack>
-#include <array>
-#include <set>
-#include <list>
 #include <stb_image.h>
-#include "util/Random.h"
-#include "Graph.h"
 
 namespace mh {
 
-    class Maze
+    class MatrixMaze : public MazeInterface
     {
     public:
-        template <typename T> 
-        struct MazePath
-        {
-            std::map<T, T> parentMap;
-            std::set<T> intersections;
-            size_t length = 0;
-        };
-        
-    public:
-        explicit Maze(const std::string& filepath);
-        Maze(const Maze &maze);
-        Maze(Maze &&maze) noexcept;
 
-        ~Maze();
+        MatrixMaze(const std::string& filepath);
+        MatrixMaze(const MatrixMaze& matrixMaze);
+        MatrixMaze(MatrixMaze&& matrixMaze) noexcept;
+        ~MatrixMaze();
 
-        const bool& operator[](int index) const { return mMaze[index]; }
-        bool& operator[](int index) { return mMaze[index]; }
+        virtual std::vector<std::pair<int, int>>& getNeighbors(int cell) const override;
+        virtual const std::set<int>& getAllVertices() const override;
 
-        int startAsInt() const { return pairToInt(mStart); }
-        int endAsInt() const { return pairToInt(mEnd); }
-        std::pair<int, int> start() const { return mStart; }
-        std::pair<int, int> end() const { return mEnd; }
-        int width() const { return mWidth; }
-        int height() const { return mHeight; }
-
-        int neighbors(int cell) const;
-        int insertNeighbors(int cell, std::set<int>& neighborSet) const;
-
-        int pairToInt(const std::pair<int, int> coord) const { return coord.first + coord.second * mWidth; }
-        std::pair<int, int> intToPair(int coord) const { return std::make_pair<int, int>(coord % mWidth, coord / mWidth); }
-
-        const Random<std::mt19937> & getEngine() const { return mRandEngine; };
+        virtual int getStart() const override { return mStart; }
+        virtual int getEnd() const override { return mEnd; }
+        virtual int getMazeWidth() const override { return mWidth; }
+        virtual int getMazeHeight() const override { return mHeight; }
 
         void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
-        void modifyGraph(Graph::GraphPath& graphPath, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
 
     private:
         void loadImageFromFile(const std::string& filepath);
-        MazePath<int> createMazePathFromGraph(Graph::GraphPath& graphPath) const;
-        void createMazePathFromGraph();
 
     private:
         int mHeight;
         int mWidth;
         int mChannels;
-        std::pair<int, int> mStart;
-        std::pair<int, int> mEnd;
+        int mStart;
+        int mEnd;
         bool *mMaze;
         stbi_uc* mData;
-
-        Random<std::mt19937> mRandEngine;
-
     };
-
-
-
 }
 
 #endif //MHRAD_MAZE_H
