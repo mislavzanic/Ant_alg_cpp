@@ -5,7 +5,7 @@
 #ifndef MHRAD_ANTALGGRAPH_H
 #define MHRAD_ANTALGGRAPH_H
 
-#include "Maze/Maze.h"
+#include "Maze/MatrixMaze.h"
 #include "util/Random.h"
 
 #include <vector>

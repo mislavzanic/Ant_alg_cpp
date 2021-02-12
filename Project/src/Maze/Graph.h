@@ -5,53 +5,37 @@
 #ifndef MHRAD_GRAPH_H
 #define MHRAD_GRAPH_H
 
-
-#include <string>
+#include "MazeInterface.h"
 #include <map>
-#include <iostream>
-#include <stack>
-#include <queue>
-#include <array>
+#include <string>
 #include <set>
-#include <list>
 #include <stb_image.h>
-#include "util/Random.h"
 
 namespace mh {
 
-    class Maze;
-
-    class Graph
+    class Graph : public MazeInterface
     {
     public:
-        struct GraphPath
-        {
-            GraphPath() : length(0) {}
 
-            std::map<int, int> parentMap;
-            std::set<int> vertices;
-            std::map<std::pair<int, int>, int> lengthMap;
-            int length;
-        };
+        Graph(const std::string& filepath);
 
-        int getEdgeLength(int v1, int v2);
+        virtual std::map<int, int>& getNeighbors(int cell) override { return mMaze[cell]; }
+        virtual const std::set<int>& getAllVertices() const override { return mVertices; }
+        virtual int getEdgeLength(int vertex1, int vertex2) override { return mMaze[vertex1][vertex2]; }
 
-    public:
-        explicit Graph(const Maze& m);
+        virtual int getStart() const override { return mStart; }
+        virtual int getEnd() const override { return mEnd; }
+        virtual int getMazeWidth() const override { return mWidth; }
+        virtual int getMazeHeight() const override { return mHeight; }
 
-        std::vector<std::pair<int, int>>& getNeighbors(int cell)
-        {
-            if (!mGraph[cell].empty()) return mGraph[cell];
-        }
+    private:
+        bool* readFromFile(const std::string& filepath);
 
-        const std::set<int>& getAllVertices() const { return mVertices; }
-        int start() const { return mStart; }
-        int end() const { return mEnd; }
-
-    public:
-        std::map<int, std::vector<std::pair<int, int>>> mGraph;
+    private:
+        std::map<int, std::map<int, int>> mMaze;
         std::set<int> mVertices;
         int mStart, mEnd;
+        int mWidth, mHeight, mChannels;
     };
 }
 

@@ -9,7 +9,7 @@
 #include "util/PathfindingAlg.h"
 #include "util/StopWatch.h"
 
-#include "Maze/Maze.h"
+#include "Maze/MatrixMaze.h"
 #include "AntAlg/AntAlgMaze.h"
 #include "AntAlg/AntAlgGraph.h"
 #include "SimulatedAnnealing/SimAnnGraph.h"

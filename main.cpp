@@ -5,6 +5,7 @@ using namespace mh;
 
 int main()
 {
+    /*
     Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/braid4.bmp");
     AntColonyMaze a(m, 20, 6, 0.5f, 1.0f);
     SimulatedAnnealing s(m, 60);
@@ -26,6 +27,6 @@ int main()
     auto solAntColonyGraph = ag.solve(15);
     tt = sw.getElapsedTime();
     std::cout << tt.count() << " " << solAntColonyGraph.length << std::endl;
-
+    */
     return 0;
 }

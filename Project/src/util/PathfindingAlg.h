@@ -5,7 +5,7 @@
 #include <queue>
 #include <stack>
 #include <algorithm>
-#include "Maze/Maze.h"
+#include "Maze/MatrixMaze.h"
 #include "Random.h"
 
 namespace mh {

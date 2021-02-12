@@ -2,9 +2,11 @@
 // Created by mislav on 2/10/21.
 //
 
-#include "Maze/Maze.h"
+#include "Maze/MatrixMaze.h"
+#include "Maze/Graph.h"
 #include "util/Random.h"
 #include <vector>
+#include <memory>
 #include <map>
 #include <stack>
 
@@ -17,40 +19,37 @@ namespace mh {
     {
     public:
 
-        SimAnnGraph(const Maze& m, int maxIter);
-        SimAnnGraph(Maze&& m, int maxIter);
-        Graph::GraphPath shortestPath();
+        SimAnnGraph(const std::string& filepath, int maxIter);
+        Path solve();
 
     private:
 
+        void createInitialSolution();
         void simAnn();
         void pickRandom(int cell, std::stack<int>& toVisit, std::map<int, int>& parentMap);
-        void createInitialSolution();
-        Graph::GraphPath getNeighbor(Graph::GraphPath& state);
-        bool findPath(int intersection, Graph::GraphPath& newPath, Graph::GraphPath& currentPath);
+        Path getNeighbor(Path& state);
+        bool findPath(int intersection, Path& newPath, Path& currentPath);
 
         static double temperature(double t) { return std::exp(-t); }
 
         double heuristics(int cell)
         {
-            return (double) 1 / (double)(std::abs((mGraph.end() % mMazeWidth) - (cell % mMazeWidth))
-                                         + std::abs((mGraph.end() / mMazeWidth) - (cell / mMazeWidth)));
+            return (double) 1 / (double)(std::abs((mMaze->getEnd() % mMaze->getMazeWidth()) - (cell % mMaze->getMazeWidth()))
+                                         + std::abs((mMaze->getEnd() / mMaze->getMazeWidth()) - (cell / mMaze->getMazeWidth())));
         }
 
-        int pathHeuristics(Graph::GraphPath& first)
+        int pathHeuristics(Path& first)
         {
-            return mMazeWidth * mMazeHeight - first.length;
+            return mMaze->getMazeWidth() * mMaze->getMazeHeight() - first.length;
         }
 
     private:
 
-        Graph mGraph;
+        std::shared_ptr<MazeInterface> mMaze;
 
         int mMaxIter;
-        int mMazeWidth;
-        int mMazeHeight;
 
-        Graph::GraphPath mSolution;
+        Path mSolution;
 
         Random<std::mt19937> mRandomEngine;
 

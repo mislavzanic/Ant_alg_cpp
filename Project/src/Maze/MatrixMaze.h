@@ -2,12 +2,13 @@
 // Created by mislav on 12/12/20.
 //
 
-#ifndef MHRAD_MAZE_H
-#define MHRAD_MAZE_H
+#ifndef MHRAD_MATRIXMAZE_H
+#define MHRAD_MATRIXMAZE_H
 
 #include "MazeInterface.h"
 #include <string>
 #include <stb_image.h>
+#include <map>
 
 namespace mh {
 
@@ -18,17 +19,17 @@ namespace mh {
         MatrixMaze(const std::string& filepath);
         MatrixMaze(const MatrixMaze& matrixMaze);
         MatrixMaze(MatrixMaze&& matrixMaze) noexcept;
-        ~MatrixMaze();
 
-        virtual std::vector<std::pair<int, int>>& getNeighbors(int cell) const override;
-        virtual const std::set<int>& getAllVertices() const override;
+        virtual  std::map<int, int>& getNeighbors(int cell) override { return mMaze[cell]; }
+        virtual const std::set<int>& getAllVertices() const override { return mVertices; }
+        virtual int getEdgeLength(int vertex1, int vertex2) override { return mMaze[vertex1][vertex2]; }
 
         virtual int getStart() const override { return mStart; }
         virtual int getEnd() const override { return mEnd; }
         virtual int getMazeWidth() const override { return mWidth; }
         virtual int getMazeHeight() const override { return mHeight; }
 
-        void modifyImage(std::map<int, int>& path, const std::tuple<uint8_t, uint8_t, uint8_t>& color, const std::string& filename);
+        static void writeToFile(std::map<int, int> parentMap, std::tuple<int, int, int> color, const std::string& filepath);
 
     private:
         void loadImageFromFile(const std::string& filepath);
@@ -39,9 +40,9 @@ namespace mh {
         int mChannels;
         int mStart;
         int mEnd;
-        bool *mMaze;
-        stbi_uc* mData;
+        std::map<int, std::map<int, int>> mMaze;
+        std::set<int> mVertices;
     };
 }
 
-#endif //MHRAD_MAZE_H
+#endif //MHRAD_MATRIXMAZE_H
