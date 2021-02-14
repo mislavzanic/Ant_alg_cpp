@@ -5,20 +5,32 @@ using namespace mh;
 
 int main()
 {
-    Maze m("/home/mislav/pmf/CLionProjects/mhRad/assets/braid1.bmp");
-    AntColonyMaze a(m, 20, 6, 0.5f, 1.0f);
-    SimulatedAnnealing s(m, 60);
-
+    AntColonyGraph ag("/home/mislav/pmf/CLionProjects/mhRad/assets/m2.bmp", 20, 6, 0.5f, 1.0f);
+    SimAnnGraph sg("/home/mislav/pmf/CLionProjects/mhRad/assets/m2.bmp", 60);
+    std::unique_ptr<MazeInterface> g = std::make_unique<Graph>("/home/mislav/pmf/CLionProjects/mhRad/assets/m2.bmp");
     StopWatch sw;
-    Maze::MazePath<int> BFSsolution = BFS(m);
-    auto timeBFS = sw.getElapsedTime();
-    m.modifyImage(BFSsolution.parentMap, {48, 34, 213}, "bfs.bmp");
-    std::cout << "BFS time: " << timeBFS.count() << ", bfs len:" << BFSsolution.length << std::endl;
+    auto path = ag.solve(15);
+    auto time = sw.getElapsedTime();
+    std::cout << path.length << " " << time.count() << std::endl;
 
-    SimAnnGraph sg(m, 200);
+
+
+    /*
+    int current = *path.vertices.begin();
+    int end = path.parentMap[current];
+    int length = path.edgeLengthMap[end];
+    std::stack<std::pair<int, int>> S;
+    S.push({current,0 });
+    while (!S.empty())
+    {
+
+    }
+    */
     sw.reset();
-    auto solSimAnnGraph = sg.shortestPath();
-    auto tt = sw.getElapsedTime();
-    std::cout << tt.count() << " " << solSimAnnGraph.length << std::endl;
+    path = sg.solve();
+    time = sw.getElapsedTime();
+    std::cout << path.length << " " << time.count() << std::endl;
+
+    writeImage("/home/mislav/pmf/CLionProjects/mhRad/assets/m2.bmp", "test.bmp", {200, 39, 56}, g->getParentMap(path));
     return 0;
 }

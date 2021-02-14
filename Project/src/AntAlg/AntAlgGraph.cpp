@@ -5,14 +5,15 @@
 #include "AntAlgGraph.h"
 #include <cassert>
 #include <algorithm>
+#include <list>
 
 namespace mh {
 
-    AntColonyGraph::AntColonyGraph(const Maze& maze, int numOfAnts, int subsetLen, double p, double startPheromones)
-        : mGraph(maze), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen), mDecreaseFactor(p), mMazeWidth(maze.width()),
-          mRandomEngine(maze.getEngine())
+    AntColonyGraph::AntColonyGraph(const std::string& filepath, int numOfAnts, int subsetLen, double p, double startPheromones)
+        : mMaze(std::make_shared<Graph>(filepath)), mNumOfAnts(numOfAnts), mSubsetLen(subsetLen), mDecreaseFactor(p),
+          mRandomEngine()
     {
-        for (int vertex : mGraph.getAllVertices())
+        for (int vertex : mMaze->getAllVertices())
         {
             mPheromones[vertex] = startPheromones;
             mAllPheromones[vertex] = 0;
@@ -20,11 +21,11 @@ namespace mh {
         mBestPath.length = -1;
     }
 
-    Graph::GraphPath AntColonyGraph::solve(int numOfIterations)
+    Path AntColonyGraph::solve(int numOfIterations)
     {
         while (numOfIterations)
         {
-            std::vector<Graph::GraphPath> paths;
+            std::vector<Path> paths;
             for (int i = 0; i < mNumOfAnts; ++i)
             {
                 std::map<int, int> parentMap;
@@ -40,8 +41,8 @@ namespace mh {
 
     void AntColonyGraph::createSolution(std::map<int, int>& parentMap)
     {
-        int start = mGraph.start();
-        int end = mGraph.end();
+        int start = mMaze->getStart();
+        int end = mMaze->getEnd();
         std::stack<int> toVisit;
         std::map<int, int> visited;
         toVisit.push(start);
@@ -61,7 +62,7 @@ namespace mh {
 
     void AntColonyGraph::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int>& parentMap)
     {
-        auto& neighbors = mGraph.getNeighbors(cell);
+        auto& neighbors = mMaze->getNeighbors(cell);
         std::set<int> neighborCells;
         double sum = 0;
         for (auto neighbor : neighbors)
@@ -101,14 +102,14 @@ namespace mh {
 
     }
 
-    void AntColonyGraph::getPath(std::map<int, int> &parentMap, std::vector<Graph::GraphPath> &paths)
+    void AntColonyGraph::getPath(std::map<int, int> &parentMap, std::vector<Path> &paths)
     {
-        int start = mGraph.start(), end = mGraph.end();
-        Graph::GraphPath path;
+        int start = mMaze->getStart(), end = mMaze->getEnd();
+        Path path;
         while (end != start)
         {
             assert(end != 0);
-            path.length += mGraph.getEdgeLength(end, parentMap[end]);
+            path.length += mMaze->getEdgeLength(end, parentMap[end]);
             path.vertices.insert(parentMap[end]);
             end = parentMap[end];
         }
@@ -121,22 +122,22 @@ namespace mh {
         }
     }
 
-    void AntColonyGraph::getSubset(std::vector<Graph::GraphPath>& paths)
+    void AntColonyGraph::getSubset(std::vector<Path>& paths)
     {
         std::sort(paths.begin(), paths.end(), [](auto& a, auto& b){ return a.length < b.length; });
     }
 
-    void AntColonyGraph::updatePheromones(std::vector<Graph::GraphPath>& paths)
+    void AntColonyGraph::updatePheromones(std::vector<Path>& paths)
     {
         for (int i = 0; i < mSubsetLen; ++i) increasePheromones(paths[i]);
-        for (int vertices : mGraph.getAllVertices())
+        for (int vertices : mMaze->getAllVertices())
         {
             if (mPheromones[vertices] > 0) mPheromones[vertices] *= (1 - mDecreaseFactor);
             mAllPheromones[vertices] = 0;
         }
     }
 
-    void AntColonyGraph::increasePheromones(const Graph::GraphPath& path)
+    void AntColonyGraph::increasePheromones(const Path& path)
     {
         for (auto cell : path.vertices) this->mPheromones[cell] += this->mAllPheromones[cell];
     }

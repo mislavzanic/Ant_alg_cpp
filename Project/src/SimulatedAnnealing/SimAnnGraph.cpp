@@ -2,23 +2,18 @@
 // Created by mislav on 2/10/21.
 //
 
+#include <list>
 #include "SimAnnGraph.h"
 
 namespace mh {
 
-    SimAnnGraph::SimAnnGraph(const Maze &m, int maxIter)
-        : mGraph(m), mRandomEngine(m.getEngine()),
-          mMaxIter(maxIter), mMazeWidth(m.width()), mMazeHeight(m.height())
+    SimAnnGraph::SimAnnGraph(const std::string& filepath, int maxIter)
+        : mMaze(std::make_shared<Graph>(filepath)), mRandomEngine(), mMaxIter(maxIter)
     {
     }
 
-    SimAnnGraph::SimAnnGraph(Maze &&m, int maxIter)
-        : mGraph(m), mRandomEngine(m.getEngine()),
-          mMaxIter(maxIter), mMazeWidth(m.width()), mMazeHeight(m.height())
-    {
-    }
 
-    Graph::GraphPath SimAnnGraph::shortestPath()
+    Path SimAnnGraph::solve()
     {
         createInitialSolution();
         simAnn();
@@ -27,7 +22,7 @@ namespace mh {
 
     void SimAnnGraph::pickRandom(int cell, std::stack<int> &toVisit, std::map<int, int> &parentMap)
     {
-        auto& neighbors = mGraph.getNeighbors(cell);
+        auto& neighbors = mMaze->getNeighbors(cell);
         std::set<int> neighborCells;
         double sum = 0;
         for (auto neighbor : neighbors)
@@ -65,8 +60,8 @@ namespace mh {
 
     void SimAnnGraph::createInitialSolution()
     {
-        int start = mGraph.start();
-        int end = mGraph.end();
+        int start = mMaze->getStart();
+        int end = mMaze->getEnd();
         std::stack<int> toVisit;
         std::map<int, bool> visited;
         std::map<int, int> parentMap;
@@ -86,7 +81,9 @@ namespace mh {
         {
             mSolution.parentMap[curr] = parentMap[curr];
             mSolution.vertices.insert(parentMap[curr]);
-            mSolution.length += mGraph.getEdgeLength(curr, parentMap[curr]);
+            int edgeLength = mMaze->getEdgeLength(curr, parentMap[curr]);
+            mSolution.length += edgeLength;
+            mSolution.edgeLengthMap[curr] = edgeLength;
             curr = parentMap[curr];
         }
 
@@ -95,7 +92,7 @@ namespace mh {
 
     void SimAnnGraph::simAnn()
     {
-        Graph::GraphPath currentState = mSolution;
+        Path currentState = mSolution;
         for (int k = 0; k < mMaxIter; ++k)
         {
             auto neighbor = getNeighbor(currentState);
@@ -115,9 +112,9 @@ namespace mh {
         }
     }
 
-    Graph::GraphPath SimAnnGraph::getNeighbor(Graph::GraphPath &state)
+    Path SimAnnGraph::getNeighbor(Path &state)
     {
-        Graph::GraphPath returnPath;
+        Path returnPath;
         int random = mRandomEngine.getIntInRange(0, state.vertices.size() - 1);
         auto node = *std::next(state.vertices.begin(), random);
         if (findPath(node, returnPath, state)) return returnPath;
@@ -126,10 +123,10 @@ namespace mh {
         return returnPath;
     }
 
-    bool SimAnnGraph::findPath(int vertex, Graph::GraphPath &newPath, Graph::GraphPath &currentPath)
+    bool SimAnnGraph::findPath(int vertex, Path &newPath, Path &currentPath)
     {
-        int end = mGraph.end();
-        int start = mGraph.start();
+        int end = mMaze->getEnd();
+        int start = mMaze->getStart();
         std::map<int, bool> visited;
         std::map<int, int> parentMap;
         std::stack<int> toVisit;
@@ -159,7 +156,9 @@ namespace mh {
         while (curr != start)
         {
             newPath.parentMap[curr] = parentMap[curr];
-            newPath.length += mGraph.getEdgeLength(curr, parentMap[curr]);
+            int edgeLength = mMaze->getEdgeLength(curr, parentMap[curr]);
+            newPath.length += edgeLength;
+            newPath.edgeLengthMap[curr] = edgeLength;
             newPath.vertices.insert(parentMap[curr]);
             curr = parentMap[curr];
         }

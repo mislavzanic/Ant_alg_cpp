@@ -5,12 +5,14 @@
 #include <queue>
 #include <stack>
 #include <algorithm>
-#include "Maze/Maze.h"
+#include "Maze/MatrixMaze.h"
+#include "Maze/Graph.h"
 #include "Random.h"
 
 namespace mh {
 
-    void pick_random(int cell, std::queue<int>& toVisit, const Maze& m, Random<std::mt19937>& engine, std::map<int, int>& path)
+    /*
+    void pickRandom(int cell, std::queue<int>& toVisit, const MazeInterface& m, Random<std::mt19937>& engine, std::map<int, int>& path)
     {
         std::array<int, 4> order{1,2,3,4};
         std::map<int, int> cellIndex
@@ -31,28 +33,7 @@ namespace mh {
         }
     }
 
-    void pick_random(int cell, std::stack<int>& toVisit, const Maze& m, Random<std::mt19937>& engine, std::map<int, int>& path)
-    {
-        std::array<int, 4> order{1,2,3,4};
-        std::map<int, int> cellIndex
-                {
-                        {1, cell < m.width() ? -1 : cell - m.width()},
-                        {2, cell + m.width() > m.width() * m.height() ? -1 : cell + m.width()},
-                        {3, cell % m.width() ? cell - 1 : -1},
-                        {4, (cell + 1) % m.width() ? cell + 1 : -1}
-                };
-        std::shuffle(order.begin(), order.end(), engine.getEngine());
-        for(int num : order)
-        {
-            if (cellIndex[num] != -1 && m[cellIndex[num]])
-            {
-                toVisit.push(cellIndex[num]);
-                if (path[cellIndex[num]] == 0) path[cellIndex[num]] = cell;
-            }
-        }
-    }
-
-    Maze::MazePath<int> BFS(const mh::Maze &m)
+    Path BFS(const mh::Maze &m)
     {
         Random<std::mt19937> engine;
         int start = m.startAsInt(), end = m.endAsInt();
@@ -67,7 +48,7 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             if (curr == end) break;
-            pick_random(curr, Q, m, engine, path);
+            pickRandom(curr, Q, m, engine, path);
         }
         Maze::MazePath<int> retPath;
         while (end != start)
@@ -95,7 +76,7 @@ namespace mh {
             if (visited[curr]) continue;
             visited[curr] = true;
             if (curr == end) break;
-            pick_random(curr, Q, m, engine, path);
+            pickRandom(curr, Q, m, engine, path);
         }
         Maze::MazePath<int> retPath;
         while (end != start)
@@ -107,6 +88,7 @@ namespace mh {
         retPath.parentMap[start] = start;
         return retPath;
     }
+     */
 }
 
 

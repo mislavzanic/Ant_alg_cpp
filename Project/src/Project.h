@@ -8,12 +8,12 @@
 #include "util/Random.h"
 #include "util/PathfindingAlg.h"
 #include "util/StopWatch.h"
+#include "util/ImageProcessing.h"
 
-#include "Maze/Maze.h"
-#include "AntAlg/AntAlgMaze.h"
+#include "Maze/MatrixMaze.h"
+#include "Maze/Graph.h"
 #include "AntAlg/AntAlgGraph.h"
 #include "SimulatedAnnealing/SimAnnGraph.h"
-#include "SimulatedAnnealing/SimAnn.h"
 
 
 #endif //MHRAD_PROJECT_H
