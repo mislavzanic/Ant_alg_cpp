@@ -6,7 +6,6 @@
 #define MHRAD_MATRIXMAZE_H
 
 #include "MazeInterface.h"
-#include "util/ImageProcessing.h"
 #include <string>
 #include <stb_image.h>
 #include <map>
@@ -27,6 +26,8 @@ namespace mh {
         virtual int getEnd() const override { return mEnd; }
         virtual int getMazeWidth() const override { return mWidth; }
         virtual int getMazeHeight() const override { return mHeight; }
+
+        virtual std::map<int, int> getParentMap(Path &path) override { return path.parentMap; }
 
     private:
         int mHeight;

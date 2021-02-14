@@ -6,9 +6,9 @@
 #define MHRAD_GRAPH_H
 
 #include "MazeInterface.h"
-#include "util/ImageProcessing.h"
 #include <map>
 #include <string>
+#include <queue>
 #include <set>
 #include <stb_image.h>
 
@@ -19,6 +19,7 @@ namespace mh {
     public:
 
         Graph(const std::string& filepath);
+        ~Graph();
 
         virtual std::map<int, int>& getNeighbors(int cell) override { return mMaze[cell]; }
         virtual const std::set<int>& getAllVertices() const override { return mVertices; }
@@ -32,10 +33,18 @@ namespace mh {
         virtual std::map<int, int> getParentMap(Path& path) override;
 
     private:
+
+        std::map<int, int> getCorrectPath(std::pair<int, int>& vertices, int edgeLength);
+        void convertToGraph();
+        int numOfNeighbors(int cell);
+        void pickNext(int cell, int length, int neighbor, std::queue<std::tuple<int, int, int>>& Q, std::map<int, std::map<int, int>>& visited);
+
+    private:
         std::map<int, std::map<int, int>> mMaze;
         std::set<int> mVertices;
         int mStart, mEnd;
         int mWidth, mHeight, mChannels;
+        bool* mMatrix;
     };
 }
 

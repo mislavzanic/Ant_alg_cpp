@@ -1,6 +1,7 @@
 #include "MatrixMaze.h"
 
 #include <queue>
+#include "util/ImageProcessing.h"
 
 namespace mh {
 
