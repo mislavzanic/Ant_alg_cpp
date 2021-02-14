@@ -91,4 +91,19 @@ namespace mh {
 
         delete[] maze;
     }
+
+    std::map<int, int> Graph::getParentMap(Path &path)
+    {
+        std::map<int, int> parentMap;
+        for (auto vertices : path.parentMap)
+        {
+            auto subMap = getCorrectPath(vertices, path.edgeLengthMap[vertices.first]);
+            for (auto v : subMap)
+            {
+                parentMap[v.first] = v.second;
+            }
+        }
+
+        return parentMap;
+    }
 }

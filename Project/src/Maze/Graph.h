@@ -29,6 +29,8 @@ namespace mh {
         virtual int getMazeWidth() const override { return mWidth; }
         virtual int getMazeHeight() const override { return mHeight; }
 
+        virtual std::map<int, int> getParentMap(Path& path) override;
+
     private:
         std::map<int, std::map<int, int>> mMaze;
         std::set<int> mVertices;
