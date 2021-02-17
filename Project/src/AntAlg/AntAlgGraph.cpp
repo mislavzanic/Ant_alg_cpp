@@ -109,10 +109,14 @@ namespace mh {
         while (end != start)
         {
             assert(end != 0);
-            path.length += mMaze->getEdgeLength(end, parentMap[end]);
+            int edgeLength = mMaze->getEdgeLength(end, parentMap[end]);
+            path.length += edgeLength;
             path.vertices.insert(parentMap[end]);
+            path.parentMap[end] = parentMap[end];
+            path.edgeLengthMap[end] = edgeLength;
             end = parentMap[end];
         }
+        path.parentMap[start] = start;
         for (int cell : path.vertices) mAllPheromones[cell] += (double)1 / path.length;
         paths.push_back(path);
 
