@@ -7,11 +7,11 @@ namespace mh {
 
     MatrixMaze::MatrixMaze(const std::string& filepath)
     {
-        bool* temp = readFromFile(filepath, &mWidth, &mHeight, &mChannels, &mStart, &mEnd);
+        mMazeMatrix = readFromFile(filepath, &mWidth, &mHeight, &mChannels, &mStart, &mEnd);
 
         for (int i = 0; i < mWidth * mHeight; ++i)
         {
-            if (temp[i])
+            if (mMazeMatrix[i])
             {
                 int cell = i;
                 mVertices.insert(cell);
@@ -21,6 +21,10 @@ namespace mh {
                 if (cell + mWidth < mWidth * mHeight) mMaze[cell][cell + mWidth] = 1;
             }
         }
-        delete[] temp;
+    }
+
+    MatrixMaze::~MatrixMaze()
+    {
+        delete[] mMazeMatrix;
     }
 }

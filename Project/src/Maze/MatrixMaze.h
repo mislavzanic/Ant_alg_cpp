@@ -17,6 +17,7 @@ namespace mh {
     public:
 
         MatrixMaze(const std::string& filepath);
+        ~MatrixMaze();
 
         virtual  std::map<int, int>& getNeighbors(int cell) override { return mMaze[cell]; }
         virtual const std::set<int>& getAllVertices() const override { return mVertices; }
@@ -29,6 +30,8 @@ namespace mh {
 
         virtual std::map<int, int> getParentMap(Path &path) override { return path.parentMap; }
 
+        virtual bool* getMazeMatrix() const override { return mMazeMatrix; }
+
     private:
         int mHeight;
         int mWidth;
@@ -36,6 +39,7 @@ namespace mh {
         int mStart;
         int mEnd;
         std::map<int, std::map<int, int>> mMaze;
+        bool* mMazeMatrix;
         std::set<int> mVertices;
     };
 }

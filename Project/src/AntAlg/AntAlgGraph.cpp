@@ -104,19 +104,7 @@ namespace mh {
 
     void AntColonyGraph::getPath(std::map<int, int> &parentMap, std::vector<Path> &paths)
     {
-        int start = mMaze->getStart(), end = mMaze->getEnd();
-        Path path;
-        while (end != start)
-        {
-            assert(end != 0);
-            int edgeLength = mMaze->getEdgeLength(end, parentMap[end]);
-            path.length += edgeLength;
-            path.vertices.insert(parentMap[end]);
-            path.parentMap[end] = parentMap[end];
-            path.edgeLengthMap[end] = edgeLength;
-            end = parentMap[end];
-        }
-        path.parentMap[start] = start;
+        Path path = mMaze->buildPath(mMaze->getStart(), mMaze->getEnd(), parentMap);
         for (int cell : path.vertices) mAllPheromones[cell] += (double)1 / path.length;
         paths.push_back(path);
 

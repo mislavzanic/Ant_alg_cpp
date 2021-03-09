@@ -31,6 +31,24 @@ namespace mh {
         virtual int getEnd() const = 0;
         virtual int getMazeWidth() const = 0;
         virtual int getMazeHeight() const = 0;
+        virtual bool* getMazeMatrix() const = 0;
+
+        Path buildPath(int start, int end, std::map<int, int>& parentMap)
+        {
+            Path newPath;
+            while (end != start)
+            {
+                int nextVertex = parentMap[end];
+                newPath.parentMap[end] = nextVertex;
+                newPath.vertices.insert(nextVertex);
+                int edgeLength = getEdgeLength(end, nextVertex);
+                newPath.length += edgeLength;
+                newPath.edgeLengthMap[end] = edgeLength;
+                end = nextVertex;
+            }
+            newPath.parentMap[start] = start;
+            return newPath;
+        }
 
         virtual std::map<int, int> getParentMap(Path& path) = 0;
     };

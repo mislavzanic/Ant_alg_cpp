@@ -32,6 +32,8 @@ namespace mh {
 
         virtual std::map<int, int> getParentMap(Path& path) override;
 
+        virtual bool* getMazeMatrix() const override { return mMatrix; }
+
     private:
 
         std::map<int, int> getCorrectPath(std::pair<int, int>& vertices, int edgeLength);

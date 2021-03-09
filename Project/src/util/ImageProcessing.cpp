@@ -2,6 +2,7 @@
 // Created by mislav on 2/14/21.
 //
 
+#include <set>
 #include "ImageProcessing.h"
 
 namespace mh {
@@ -53,5 +54,15 @@ namespace mh {
 
         stbi_write_bmp(filepath.c_str(), width, height, channels, newImg);
         delete[] newImg;
+    }
+
+    void writeImage(const std::string &imagepath, const std::string &filepath, std::tuple<int, int, int> color, const std::set<int> &vertices)
+    {
+        std::map<int, int> tempMap;
+        for (int vertex : vertices)
+        {
+            tempMap[vertex] = 1;
+        }
+        writeImage(imagepath, filepath, color, std::move(tempMap));
     }
 }

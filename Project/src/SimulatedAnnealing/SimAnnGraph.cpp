@@ -77,17 +77,7 @@ namespace mh {
             pickRandom(curr, toVisit, parentMap);
         }
 
-        while (curr != start)
-        {
-            mSolution.parentMap[curr] = parentMap[curr];
-            mSolution.vertices.insert(parentMap[curr]);
-            int edgeLength = mMaze->getEdgeLength(curr, parentMap[curr]);
-            mSolution.length += edgeLength;
-            mSolution.edgeLengthMap[curr] = edgeLength;
-            curr = parentMap[curr];
-        }
-
-        mSolution.parentMap[start] = start;
+        mSolution = mMaze->buildPath(start, curr, parentMap);
     }
 
     void SimAnnGraph::simAnn()
@@ -153,16 +143,7 @@ namespace mh {
         }
         if (curr != end) return false;
 
-        while (curr != start)
-        {
-            newPath.parentMap[curr] = parentMap[curr];
-            int edgeLength = mMaze->getEdgeLength(curr, parentMap[curr]);
-            newPath.length += edgeLength;
-            newPath.edgeLengthMap[curr] = edgeLength;
-            newPath.vertices.insert(parentMap[curr]);
-            curr = parentMap[curr];
-        }
-        newPath.parentMap[start] = start;
+        newPath = mMaze->buildPath(start, curr, parentMap);
 
         return true;
     }
