@@ -172,7 +172,6 @@ namespace mh {
         {
             if (visited[cell + mWidth].empty())
                 Q.push({cell + mWidth, length + 1, neighbor});
-
         }
     }
 }
